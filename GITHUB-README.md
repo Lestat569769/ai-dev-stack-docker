@@ -418,6 +418,30 @@ User receives: Helpful text response
 ✅ **User-Friendly** - Simple natural language interface
 ✅ **Extensible** - Easy to customize and expand
 
+#### 📚 Complete Workflow Documentation
+
+Want to understand exactly how it works or customize it?
+
+**[→ Workflow Deep Dive](WORKFLOW-DEEP-DIVE.md)** - 15,000+ word comprehensive guide covering:
+- 🔍 **Node-by-Node Breakdown** - Every node explained in detail
+- 📊 **Data Flow Visualization** - See exactly what data moves where
+- 🎨 **Customization Guide** - Add quality presets, dimensions, models
+- 🔧 **Advanced Modifications** - Image-to-image, batch generation, upscaling
+- 🐛 **Troubleshooting** - Solutions to common issues
+- 💡 **Example Code** - Copy-paste ready modifications
+
+**[→ N8N Workflow Guide](N8N-WORKFLOW-GUIDE.md)** - Setup and usage guide:
+- 📥 How to import the workflow
+- ⚙️ Configuration steps
+- 🧪 Testing examples
+- 🔗 Connecting to services
+
+**Quick Links:**
+- [How to modify quality presets →](WORKFLOW-DEEP-DIVE.md#1-add-new-quality-presets)
+- [How to add custom dimensions →](WORKFLOW-DEEP-DIVE.md#2-add-custom-dimensions)
+- [How to switch AI models →](WORKFLOW-DEEP-DIVE.md#5-switch-llm-models)
+- [How to change detection keywords →](WORKFLOW-DEEP-DIVE.md#4-change-detection-keywords)
+
 ### 🚀 More Workflow Ideas
 
 Once you understand the included workflow, you can build:

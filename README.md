@@ -407,6 +407,24 @@ After installation, find the template at:
 
 **See detailed workflow guide:** [N8N-WORKFLOW-GUIDE.md](N8N-WORKFLOW-GUIDE.md)
 
+### 📚 Complete Workflow Documentation
+
+**Want to understand every detail or customize the workflow?**
+
+**[Workflow Deep Dive →](WORKFLOW-DEEP-DIVE.md)** - Comprehensive 15,000+ word guide:
+- 🔍 Node-by-node breakdown with code examples
+- 📊 Complete data flow visualization
+- 🎨 Step-by-step customization guide
+- 🔧 Advanced modifications (batch generation, upscaling, etc.)
+- 🐛 Troubleshooting solutions
+- 💡 Copy-paste ready code snippets
+
+**Quick customization links:**
+- [Add quality presets →](WORKFLOW-DEEP-DIVE.md#1-add-new-quality-presets)
+- [Add custom dimensions →](WORKFLOW-DEEP-DIVE.md#2-add-custom-dimensions)
+- [Switch AI models →](WORKFLOW-DEEP-DIVE.md#5-switch-llm-models)
+- [Modify detection keywords →](WORKFLOW-DEEP-DIVE.md#4-change-detection-keywords)
+
 ### Connect Ollama to n8n
 
 1. Open n8n at http://localhost:5678
