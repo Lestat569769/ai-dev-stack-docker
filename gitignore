@@ -1,0 +1,60 @@
+# Environment files with secrets
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Docker volumes (data should stay local)
+comfyui/models/*
+!comfyui/models/.gitkeep
+comfyui/output/*
+!comfyui/output/.gitkeep
+comfyui/input/*
+!comfyui/input/.gitkeep
+comfyui/custom_nodes/*
+!comfyui/custom_nodes/.gitkeep
+
+# n8n backups (user-generated)
+n8n/backup/*
+!n8n/backup/.gitkeep
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test files
+test-output/
+coverage/
