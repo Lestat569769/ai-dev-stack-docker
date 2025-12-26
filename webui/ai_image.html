@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 AI Image Generator - Real-Time</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .chat-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 900px;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .chat-container.fullscreen {
+            max-width: 95vw;
+            height: 95vh;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .chat-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .chat-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user { align-items: flex-end; }
+        .message.bot { align-items: flex-start; }
+
+        .message-content {
+            max-width: 80%;
+            padding: 15px 20px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border: 2px solid #e9ecef;
+        }
+
+        .message-image {
+            max-width: 100%;
+            margin-top: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .message-image:hover { transform: scale(1.02); }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        .status-processing {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.4s ease;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            background: white;
+            border-top: 2px solid #e9ecef;
+            display: flex;
+            gap: 10px;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .chat-input:focus { border-color: #667eea; }
+
+        .send-button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .send-button:hover { transform: translateY(-2px); }
+        .send-button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .loading {
+            display: flex;
+            gap: 8px;
+            padding: 15px;
+        }
+
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .metadata {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="chat-title">🎨 AI Image Generator</div>
+            <div class="chat-controls">
+                <button class="control-btn" onclick="toggleFullscreen()">⛶ Expand</button>
+                <button class="control-btn" onclick="clearChat()">🗑️ Clear</button>
+                <button class="control-btn" onclick="newChat()">➕ New</button>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">
+                <div class="message-content">
+                    <strong>Welcome! ✨</strong><br><br>
+                    I can generate images for you using Stable Diffusion.<br><br>
+                    Try: "generate image of a sunset over the ocean"
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <input 
+                type="text" 
+                class="chat-input" 
+                id="chatInput" 
+                placeholder="Type your message..."
+                onkeypress="if(event.key==='Enter') sendMessage()"
+            >
+            <button class="send-button" id="sendButton" onclick="sendMessage()">
+                Send
+            </button>
+        </div>
+    </div>
+
+<script>
+    const WEBHOOK_URL = 'http://192.168.50.202:5678/webhook/db604b2c-9149-41f1-bcc1-b1a5f38a1f3b/chat';
+    const COMFYUI_HISTORY_URL = 'http://localhost:8188/history';
+    const COMFYUI_QUEUE_URL = 'http://localhost:8188/queue';
+
+    let isProcessing = false;
+    let activePolling = new Set();
+
+    async function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        if (!message || isProcessing) return;
+
+        addMessage(message, 'user');
+        input.value = '';
+
+        isProcessing = true;
+        document.getElementById('sendButton').disabled = true;
+        const loadingId = addLoading();
+
+        try {
+            const response = await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chatInput: message })
+            });
+
+            removeLoading(loadingId);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const text = await response.text();
+            if (!text || text.trim() === '') {
+                startImagePolling(null, null); // no jobId; fallback to monitoring latest
+            } else {
+                try {
+                    const data = JSON.parse(text);
+                    handleResponse(data, message);
+                } catch {
+                    addMessage(text, 'bot');
+                }
+            }
+
+        } catch (error) {
+            removeLoading(loadingId);
+            addMessage('❌ Connection error: ' + error.message, 'bot');
+        } finally {
+            isProcessing = false;
+            document.getElementById('sendButton').disabled = false;
+        }
+    }
+
+    function handleResponse(data, originalMessage) {
+        if (data.status === 'processing') {
+            const msgId = addMessage(`
+                <strong>🎨 Image Generation Started!</strong><br><br>
+                <div class="status-indicator status-processing">
+                    ⏳ Processing... ${data.estimatedTime ? `(estimated: ${data.estimatedTime}s)` : ''}
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 5%"></div>
+                </div>
+                <small>Job ID: ${data.jobId || 'unknown'}</small>
+            `, 'bot');
+
+            startImagePolling(data.jobId, msgId);
+        } else {
+            const responseText = data.text || data.output || data.message || JSON.stringify(data);
+            addMessage(responseText, 'bot');
+        }
+    }
+
+    // Real-time progress polling:
+    // - If jobId is provided: poll /history/{jobId}
+    // - Else: poll /queue to detect in-progress and use latest /history entry as fallback
+    function startImagePolling(jobId, statusMsgId) {
+        const pollId = Date.now();
+        activePolling.add(pollId);
+
+        statusMsgId = addMessage(`
+            <strong>🎨 Generating Your Image...</strong><br><br>
+            <div class="status-indicator status-processing">
+                ⏳ Processing...
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-${pollId}" style="width: 5%"></div>
+            </div>
+            <small id="status-text-${pollId}">Initializing...</small>
+        `, 'bot');
+
+        let lastImageFilename = null;
+        let lastProgress = 5;
+        let attempts = 0;
+
+        const interval = setInterval(async () => {
+            attempts++;
+            const progressBar = document.getElementById(`progress-${pollId}`);
+            const statusText = document.getElementById(`status-text-${pollId}`);
+
+            try {
+                let data = null;
+
+                if (jobId) {
+                    // Try job-specific history first
+                    const r = await fetch(`${COMFYUI_HISTORY_URL}/${jobId}`);
+                    if (r.ok) data = await r.json();
+                }
+
+                if (!data) {
+                    // General history as fallback
+                    const rh = await fetch(COMFYUI_HISTORY_URL);
+                    if (rh.ok) {
+                        const history = await rh.json();
+                        const entries = Object.entries(history);
+                        if (entries.length > 0) {
+                            const [latestPromptId, latestData] = entries[entries.length - 1];
+                            data = latestData;
+                            if (!jobId) jobId = latestPromptId; // adopt latest if jobId unknown
+                        }
+                    }
+                }
+
+                // Optional: check queue for status hints
+                let queueHint = null;
+                try {
+                    const rq = await fetch(COMFYUI_QUEUE_URL);
+                    if (rq.ok) {
+                        queueHint = await rq.json(); // shape may include 'queue_running' / 'queue_pending'
+                    }
+                } catch {}
+
+                // Parse progress and status
+                let current = 0, total = 100, status = 'executing';
+                let outputs = null;
+
+                if (data && data.status) {
+                    // common fields used by ComfyUI history
+                    current = Number(data.status.current_step || 0);
+                    total = Number(data.status.total_steps || (data.status.max_steps || 100));
+                    status = String(data.status.status || 'executing');
+                }
+
+                // Some builds provide a plain progress value
+                if (data && typeof data.progress === 'number') {
+                    current = Math.floor(data.progress);
+                    total = 100;
+                }
+
+                outputs = data && data.outputs ? data.outputs : null;
+                const computed = total > 0 ? Math.max(5, Math.min(100, Math.floor((current / total) * 100))) : lastProgress;
+                lastProgress = computed;
+
+                if (progressBar) progressBar.style.width = computed + '%';
+
+                // Status text
+                const hints = [];
+                if (statusText) {
+                    if (status) hints.push(`Status: ${status}`);
+                    if (total && current) hints.push(`Step ${current}/${total}`);
+                    if (queueHint && queueHint.queue_running) hints.push(`Running: ${Array.isArray(queueHint.queue_running) ? queueHint.queue_running.length : queueHint.queue_running}`);
+                    if (queueHint && queueHint.queue_pending) hints.push(`Pending: ${Array.isArray(queueHint.queue_pending) ? queueHint.queue_pending.length : queueHint.queue_pending}`);
+                    statusText.textContent = hints.length ? hints.join(' • ') : 'Working...';
+                }
+
+                // Completion detection and image extraction
+                if (outputs) {
+                    // Heuristic: find first output node with images
+                    let imageObj = null;
+                    for (const key of Object.keys(outputs)) {
+                        const out = outputs[key];
+                        if (out && Array.isArray(out.images) && out.images.length > 0) {
+                            imageObj = out.images[0];
+                            break;
+                        }
+                    }
+
+                    if (imageObj && imageObj.filename && imageObj.filename !== lastImageFilename) {
+                        lastImageFilename = imageObj.filename;
+                        const imageUrl = `http://localhost:8188/view?filename=${imageObj.filename}&type=output`;
+
+                        // finalize UI
+                        if (progressBar) progressBar.style.width = '100%';
+
+                        updateMessage(statusMsgId, `
+                            <strong>✨ Image Generated Successfully!</strong><br><br>
+                            <div class="status-indicator status-completed">
+                                ✅ Completed
+                            </div>
+                            <img class="message-image" src="${imageUrl}" alt="Generated Image"
+                                 onclick="window.open('${imageUrl}', '_blank')"
+                                 onerror="this.style.display='none'; console.error('Failed to load image');">
+                            <div class="metadata">
+                                <strong>Filename:</strong> ${imageObj.filename}<br>
+                                <strong>💾 Saved to:</strong> ComfyUI/output/${imageObj.filename}<br>
+                                <strong>Click image to open full size</strong>
+                            </div>
+                        `);
+
+                        clearInterval(interval);
+                        activePolling.delete(pollId);
+                        return;
+                    }
+                }
+
+                // If ComfyUI reports done or progress hits 100 without outputs, give user hints
+                if ((status === 'done' || computed >= 99) && !outputs) {
+                    updateMessage(statusMsgId, `
+                        <strong>⚠️ Completed, but image not found (yet)</strong><br><br>
+                        <div class="status-indicator" style="background:#fff3cd; color:#856404; border-color:#ffc107;">
+                            Image file may still be saving…
+                        </div>
+                        <p><strong>Check manually:</strong></p>
+                        <ul style="text-align:left; margin-left:20px;">
+                            <li><a href="http://localhost:8188" target="_blank">ComfyUI Interface</a></li>
+                            <li>Output folder: <code>D:\\Docker\\ComfyUI_windows_portable\\ComfyUI\\output\\</code></li>
+                            <li>Newest <code>*.png</code> file is your result</li>
+                        </ul>
+                    `);
+                    clearInterval(interval);
+                    activePolling.delete(pollId);
+                    return;
+                }
+
+                // Safety timeout to avoid infinite polling
+                if (attempts >= 60) { // ~2 minutes if interval adjusted; we’ll keep default 2s below
+                    updateMessage(statusMsgId, `
+                        <strong>⚠️ Generation Timeout</strong><br><br>
+                        <div class="status-indicator" style="background:#fff3cd; color:#856404; border-color:#ffc107;">
+                            ⏱️ Taking longer than expected
+                        </div>
+                        <p>Your image may still be generating. You can check progress manually:</p>
+                        <ul style="text-align:left; margin-left:20px;">
+                            <li><a href="http://localhost:8188" target="_blank">ComfyUI Interface</a></li>
+                            <li>Output folder: <code>D:\\Docker\\ComfyUI_windows_portable\\ComfyUI\\output\\</code></li>
+                        </ul>
+                    `);
+                    clearInterval(interval);
+                    activePolling.delete(pollId);
+                }
+
+            } catch (err) {
+                if (statusText) statusText.textContent = 'Polling error — retrying…';
+                console.error('Polling error:', err);
+            }
+        }, 1000); // real-time feel: 2s polling
+    }
+
+    function addMessage(text, sender) {
+        const messagesDiv = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}`;
+        messageDiv.id = `msg-${Date.now()}`;
+
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+        contentDiv.innerHTML = text;
+
+        messageDiv.appendChild(contentDiv);
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+        return messageDiv.id;
+    }
+
+    function updateMessage(msgId, newContent) {
+        const msg = document.getElementById(msgId);
+        if (msg) {
+            const contentDiv = msg.querySelector('.message-content');
+            if (contentDiv) {
+                contentDiv.innerHTML = newContent;
+            }
+        }
+    }
+
+    function addLoading() {
+        const messagesDiv = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message bot';
+        messageDiv.id = 'loading-message';
+
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'loading';
+        loadingDiv.innerHTML = '<div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>';
+
+        contentDiv.appendChild(loadingDiv);
+        messageDiv.appendChild(contentDiv);
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+        return 'loading-message';
+    }
+
+    function removeLoading(id) {
+        const loadingMsg = document.getElementById(id);
+        if (loadingMsg) {
+            loadingMsg.remove();
+        }
+    }
+
+    function clearChat() {
+        if (confirm('Clear all messages? This cannot be undone.')) {
+            const messagesDiv = document.getElementById('chatMessages');
+            messagesDiv.innerHTML = '';
+
+            addMessage(`
+                <strong>Welcome! ✨</strong><br><br>
+                I can generate images for you using Stable Diffusion.<br><br>
+                Try: "generate image of a sunset over the ocean"
+            `, 'bot');
+
+            // Cancel any active polling
+            activePolling.clear();
+        }
+    }
+
+    function newChat() {
+        clearChat();
+        document.getElementById('chatInput').focus();
+    }
+
+    function toggleFullscreen() {
+        const container = document.querySelector('.chat-container');
+        const btn = event.target;
+
+        container.classList.toggle('fullscreen');
+        btn.textContent = container.classList.contains('fullscreen') ? '⛶ Shrink' : '⛶ Expand';
+    }
+
+    window.onload = () => {
+        document.getElementById('chatInput').focus();
+    };
+</script>
+</body>
+</html>

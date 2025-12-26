@@ -406,7 +406,8 @@ $Directories = @(
     "comfyui/output",
     "comfyui/custom_nodes",
     "n8n/backup",
-    "n8n/workflows"
+    "n8n/workflows",
+    "webui"
 )
 
 foreach ($Dir in $Directories) {

@@ -417,6 +417,7 @@ print_info "\n[6/9] Creating directory structure and workflow template..."
 
 mkdir -p comfyui/{models,input,output,custom_nodes}
 mkdir -p n8n/{backup,workflows}
+mkdir -p webui
 
 # Create n8n workflow template
 cat > n8n/workflows/AI-Image-Generator-Template.json << 'WORKFLOW_EOF'

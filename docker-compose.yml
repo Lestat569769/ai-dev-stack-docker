@@ -113,6 +113,23 @@ services:
     networks:
       - ai-network
 
+  # Web UI Server - Serve HTML interfaces
+  webui:
+    image: python:3.11-slim
+    container_name: webui
+    ports:
+      - "8890:8890"
+    volumes:
+      - ./webui:/app
+    working_dir: /app
+    command: python -m http.server 8890
+    restart: unless-stopped
+    networks:
+      - ai-network
+    depends_on:
+      - comfyui
+      - ollama
+
 volumes:
   comfyui-data:
   ollama-data:
