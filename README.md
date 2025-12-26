@@ -53,6 +53,8 @@ Complete Docker-based AI development environment with ComfyUI (Stable Diffusion)
 - **Disk Space**: 30GB+ free space
 - **Docker**: Docker Desktop (Windows/macOS) or Docker Engine (Linux)
 
+**Don't have Docker installed?** See our [Docker Installation Guide](DOCKER-INSTALLATION.md) for step-by-step instructions.
+
 ### Windows
 - Windows 10/11 (64-bit)
 - Docker Desktop 4.0+

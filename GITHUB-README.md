@@ -196,6 +196,10 @@ chmod +x install-linux-macos.sh
 
 **Total time:** 20-30 minutes (depending on internet speed)
 
+### 🐳 Don't Have Docker?
+
+**[→ Docker Installation Guide](DOCKER-INSTALLATION.md)** - Step-by-step instructions for Windows, Linux, and macOS.
+
 ## 📋 Prerequisites
 
 - **RAM:** 16GB+ recommended (32GB+ ideal)

@@ -1,5 +1,18 @@
 # Quick Start Guide - AI Development Stack
 
+## ⚡ Prerequisites Check
+
+Before installing, verify Docker is installed:
+
+```bash
+docker --version
+```
+
+**✅ See a version number?** Great! Continue below.  
+**❌ Command not found?** [Install Docker first →](DOCKER-INSTALLATION.md)
+
+---
+
 ## Installation (Choose Your Platform)
 
 ### Windows

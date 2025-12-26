@@ -152,12 +152,20 @@ try {
     }
 } catch {
     Write-Fail "ERROR: Docker Desktop not installed or not in PATH"
-    Write-Info "`nDocker Desktop is required. Install it from:"
+    Write-Info "`nDocker Desktop is required. See installation guide:"
+    Write-Info "https://github.com/Lestat569769/ai-dev-stack-docker/blob/main/DOCKER-INSTALLATION.md"
+    Write-Info "`nOr download directly:"
     Write-Info "https://www.docker.com/products/docker-desktop"
     
-    $OpenBrowser = Read-Host "`nOpen Docker Desktop download page? (Y/N)"
+    $OpenBrowser = Read-Host "`nOpen Docker installation guide? (Y/N)"
     if ($OpenBrowser -match '^[Yy]') {
-        Start-Process "https://www.docker.com/products/docker-desktop"
+        Start-Process "https://github.com/Lestat569769/ai-dev-stack-docker/blob/main/DOCKER-INSTALLATION.md"
+    } else {
+        $OpenDownload = Read-Host "Open Docker Desktop download page? (Y/N)"
+        if ($OpenDownload -match '^[Yy]') {
+            Start-Process "https://www.docker.com/products/docker-desktop"
+        }
+    }
     }
     exit 1
 }

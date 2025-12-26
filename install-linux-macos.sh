@@ -143,7 +143,9 @@ print_info "\n[2/9] Checking Docker..."
 
 if ! command -v docker &> /dev/null; then
     print_error "ERROR: Docker is not installed"
-    print_info "\nPlease install Docker:"
+    print_info "\nSee our Docker installation guide:"
+    print_info "https://github.com/Lestat569769/ai-dev-stack-docker/blob/main/DOCKER-INSTALLATION.md"
+    print_info "\nQuick install:"
     if [[ "$OS_TYPE" == "linux" ]]; then
         print_info "  curl -fsSL https://get.docker.com | sh"
         print_info "  sudo usermod -aG docker $USER"
