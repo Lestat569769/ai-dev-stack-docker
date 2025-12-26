@@ -12,6 +12,40 @@ Complete Docker-based AI development environment with ComfyUI (Stable Diffusion)
 | **Qdrant** | 6333 | Vector database for embeddings |
 | **PostgreSQL** | Internal | Database backend for n8n |
 
+### Feature Highlights
+
+**🎨 ComfyUI**
+- Node-based visual interface for Stable Diffusion
+- Multiple model support (SD 1.5, SDXL, custom)
+- ControlNet for precise image control
+- Built-in upscaling and enhancement
+- Custom nodes and extensions
+
+**🤖 Ollama**
+- phi4:latest (14B params) included
+- 100% private, no cloud APIs
+- GPU acceleration (NVIDIA)
+- Multiple model support
+- OpenAI-compatible API
+
+**🔄 n8n**
+- Visual workflow builder
+- 400+ integrations
+- AI nodes (Ollama, OpenAI, etc.)
+- Scheduled & webhook triggers
+- JavaScript/Python code nodes
+
+**📊 Qdrant**
+- Fast vector similarity search
+- Semantic search capabilities
+- Web-based dashboard
+- Perfect for RAG applications
+
+**🗄️ PostgreSQL**
+- Reliable data persistence
+- n8n workflow storage
+- Execution history tracking
+
 ## 📋 Prerequisites
 
 ### All Platforms
@@ -286,23 +320,90 @@ comfyui/models/
 
 ## 🔄 n8n Workflows
 
-### Import the Starter Workflow
+### 🎯 Included Workflow Template: AI Image Generator
 
-After installation, you'll find a starter workflow template at:
+This stack includes a **complete, production-ready workflow** that combines Ollama and ComfyUI for intelligent image generation.
+
+#### How It Works
+
+**Basic Flow:**
+```
+User Message → Detect "image" keyword → Two paths:
+
+Path 1 (Image Generation):
+  User Input → Ollama (enhance prompt) → Parse JSON → 
+  Build ComfyUI API → Generate Image → Download → Return
+
+Path 2 (Regular Chat):
+  User Input → Ollama (chat) → Format → Return
+```
+
+**Intelligent Features:**
+
+1. **Style Auto-Detection**
+   - Detects cartoon characters (Rick and Morty, SpongeBob, etc.) → Cartoon style
+   - Detects "painting", "watercolor" → Artistic style
+   - Detects "3d render", "cgi" → 3D style
+   - Default for realistic subjects → Photorealistic
+
+2. **Quality Presets**
+   - "quick" or "draft" → 20 steps (fast)
+   - "normal" → 35 steps (balanced)
+   - "high" or "detailed" → 50 steps (quality)
+   - "ultra" → 70 steps (maximum quality)
+
+3. **Dimension Detection**
+   - "portrait" → 512x768
+   - "landscape" → 768x512
+   - "1024" → 1024x1024
+   - "4k" → 2048x2048
+   - "phone" → 480x853
+
+4. **Dual-Mode Operation**
+   - Contains "image"? → Generate image with ComfyUI
+   - No "image"? → Chat response with Ollama
+
+#### Example Interactions
+
+**Example 1: Simple Request**
+```
+User: "generate image of a sunset over mountains"
+→ Ollama enhances: "RAW photo, professional landscape photography..."
+→ ComfyUI generates: Photorealistic landscape (high quality, 35 steps)
+→ User receives: Beautiful sunset image with metadata
+```
+
+**Example 2: Style Control**
+```
+User: "generate cartoon image of a friendly dragon"
+→ Ollama: "digital illustration, cartoon style, vibrant colors..."
+→ ComfyUI: Cartoon sampler (euler), CFG 11.0
+→ User receives: Colorful cartoon dragon
+```
+
+**Example 3: Quality Control**
+```
+User: "generate ultra quality 1024 portrait of a woman"
+→ Detects: ultra (70 steps), 1024 (1024x1024), portrait
+→ Ollama adds: "detailed facial features, professional photography..."
+→ ComfyUI generates: High-resolution portrait
+→ User receives: Ultra-detailed image (~38 seconds)
+```
+
+### Import the Workflow
+
+After installation, find the template at:
 - **Windows**: `%USERPROFILE%\ai-dev-stack\n8n\workflows\AI-Image-Generator-Template.json`
 - **Linux/macOS**: `~/ai-dev-stack/n8n/workflows/AI-Image-Generator-Template.json`
 
 **To import:**
 1. Open n8n at http://localhost:5678
-2. Click **"Workflows"** in the left sidebar
-3. Click **"Import from File"**
-4. Select the `AI-Image-Generator-Template.json` file
-5. The workflow will be imported and ready to customize!
+2. Click **"Workflows"** → **"Import from File"**
+3. Select the template file
+4. Configure Ollama credentials (Base URL: `http://ollama:11434`)
+5. Activate and test!
 
-This template includes a basic structure for:
-- Chat interface with AI
-- Image generation detection
-- Integration points for ComfyUI and Ollama
+**See detailed workflow guide:** [N8N-WORKFLOW-GUIDE.md](N8N-WORKFLOW-GUIDE.md)
 
 ### Connect Ollama to n8n
 

@@ -8,24 +8,170 @@
 
 One-command installation of a complete AI development environment with image generation, local LLMs, workflow automation, and vector storage.
 
-## ✨ Features
+## ✨ Features & Services
 
-| Service | Port | Description |
-|---------|------|-------------|
-| **ComfyUI** | 8188 | Stable Diffusion GUI for AI image generation |
-| **Ollama** | 11434 | Local LLM server (includes phi4:latest) |
-| **n8n** | 5678 | Workflow automation platform |
-| **Qdrant** | 6333 | Vector database for embeddings |
-| **PostgreSQL** | Internal | Database backend for n8n |
+### 🎨 ComfyUI (Port 8188)
+**Advanced Stable Diffusion Interface**
+
+ComfyUI is a powerful node-based interface for Stable Diffusion that allows you to:
+- **Generate AI Images** - Create photorealistic, artistic, or stylized images from text prompts
+- **Visual Workflow Builder** - Design complex image generation pipelines with a drag-and-drop interface
+- **Model Management** - Easily switch between different Stable Diffusion models (SD 1.5, SDXL, custom models)
+- **Advanced Controls** - Fine-tune every aspect: steps, CFG scale, samplers, schedulers, seeds
+- **ControlNet Support** - Use pose, depth, and edge detection for precise control
+- **Upscaling & Enhancement** - Built-in support for image upscaling and refinement
+- **Custom Nodes** - Extend functionality with community-created nodes
+- **Batch Processing** - Generate multiple variations efficiently
+
+**Use Cases:**
+- Create marketing materials and social media content
+- Generate concept art and illustrations
+- Produce product mockups and visualizations
+- Build custom image generation workflows
+- Experiment with AI art styles
+
+---
+
+### 🤖 Ollama (Port 11434)
+**Local Large Language Model Server**
+
+Ollama makes running large language models locally simple and efficient:
+- **phi4:latest Included** - Microsoft's 14B parameter model with excellent quality
+- **No Cloud Required** - 100% private, runs entirely on your machine
+- **Fast Inference** - Optimized for both CPU and GPU
+- **Easy Model Management** - One command to download and switch models
+- **OpenAI-Compatible API** - Works with existing tools and libraries
+- **Multiple Models** - Run different models for different tasks (chat, code, creative writing)
+- **Context Aware** - Maintains conversation context for natural interactions
+- **Low Memory Mode** - Intelligent model loading and unloading
+
+**Popular Models Supported:**
+- **phi4** (14B) - Best overall quality, recommended
+- **llama3.2** (3B) - Fast, great for quick queries
+- **qwen2.5-coder** (7B) - Specialized for code generation
+- **mistral** (7B) - High quality, multilingual
+- **codellama** (7B) - Meta's code-focused model
+
+**Use Cases:**
+- Build chatbots and virtual assistants
+- Generate code and documentation
+- Analyze and summarize documents
+- Create content (blogs, emails, social posts)
+- Answer questions from your knowledge base
+- Power intelligent automation workflows
+
+---
+
+### 🔄 n8n (Port 5678)
+**Workflow Automation Platform**
+
+n8n connects all your AI services and automates complex workflows:
+- **Visual Workflow Builder** - Drag-and-drop interface for creating automations
+- **AI Integration** - Pre-built nodes for Ollama, OpenAI, and more
+- **400+ Integrations** - Connect to APIs, databases, cloud services, and local tools
+- **Scheduled Execution** - Run workflows on cron schedules or intervals
+- **Webhook Support** - Trigger workflows from external services
+- **Conditional Logic** - IF/THEN conditions, loops, and branching
+- **Data Transformation** - JavaScript/Python code nodes for custom logic
+- **Error Handling** - Retry logic, error notifications, and debugging tools
+- **Self-Hosted** - Full control over your data and workflows
+
+**Pre-Built Workflow Included:**
+This stack includes a complete **AI Image Generator** workflow template that:
+- ✅ Detects when users request images vs regular chat
+- ✅ Uses Ollama to intelligently enhance prompts
+- ✅ Auto-detects style (photorealistic, cartoon, painting, 3D)
+- ✅ Sends optimized requests to ComfyUI
+- ✅ Monitors generation progress
+- ✅ Downloads and returns generated images
+- ✅ Provides dual-mode: image generation OR conversational chat
+
+**Use Cases:**
+- Automate social media posts with AI-generated images
+- Build custom AI agents for specific tasks
+- Create data processing pipelines
+- Monitor and respond to events automatically
+- Integrate AI into existing business processes
+- Build internal tools and dashboards
+
+---
+
+### 📊 Qdrant (Port 6333)
+**High-Performance Vector Database**
+
+Qdrant stores and searches vector embeddings for semantic search and AI applications:
+- **Fast Vector Search** - Millisecond-level similarity search over millions of vectors
+- **Multiple Distance Metrics** - Cosine, Euclidean, Dot Product
+- **Filtering** - Combine vector search with metadata filters
+- **Collections** - Organize vectors into separate namespaces
+- **Payloads** - Store additional data with each vector
+- **Snapshots** - Backup and restore your data
+- **RESTful API** - Easy integration with any language
+- **Web Dashboard** - Visual interface for managing collections
+
+**Use Cases:**
+- Semantic search over documents
+- Image similarity search
+- Recommendation systems
+- RAG (Retrieval Augmented Generation) for AI
+- Chatbots with long-term memory
+- Duplicate detection
+- Clustering and classification
+
+---
+
+### 🗄️ PostgreSQL (Internal)
+**Reliable Database Backend**
+
+PostgreSQL provides persistent storage for n8n and your workflows:
+- **Workflow Storage** - All n8n workflows, executions, and credentials
+- **Execution History** - Track every workflow run with full logs
+- **ACID Compliance** - Reliable, transactional data storage
+- **High Performance** - Optimized for n8n's workload
+- **Automatic Backups** - Via Docker volumes
+- **Secure** - Isolated within Docker network
+
+---
 
 ### 🎯 Why This Stack?
 
-- ✅ **Complete AI Toolkit** - Everything you need for AI development in one package
-- ✅ **Privacy First** - All models and data stay on your machine
-- ✅ **Cross-Platform** - Works on Windows, Linux, and macOS
-- ✅ **GPU Support** - Automatic NVIDIA GPU detection and acceleration
-- ✅ **Production Ready** - Used for real AI automation workflows
-- ✅ **Easy Updates** - One command to update all services
+**🔒 Privacy First**
+- All models and data stay on your machine
+- No cloud API calls required
+- Full control over your AI infrastructure
+- GDPR/compliance-friendly
+
+**⚡ Performance Optimized**
+- Automatic GPU detection and acceleration
+- Efficient resource management
+- Optimized Docker networking
+- Fast model loading and inference
+
+**🛠️ Production Ready**
+- Used in real-world AI automation
+- Comprehensive error handling
+- Health checks on all services
+- Persistent data storage
+- Easy backup and restore
+
+**🚀 Easy to Use**
+- One-command installation
+- Cross-platform (Windows, Linux, macOS)
+- Interactive management scripts
+- Pre-built workflow templates
+- Comprehensive documentation
+
+**🔄 Fully Integrated**
+- Services communicate seamlessly
+- Pre-configured networking
+- Ready-to-use workflow template
+- No manual configuration needed
+
+**💰 Cost Effective**
+- 100% free and open source
+- No subscription fees
+- No per-request API costs
+- Run unlimited workflows
 
 ## 🚀 Quick Start
 
@@ -66,27 +212,241 @@ chmod +x install-linux-macos.sh
 
 ## 🎨 What Can You Build?
 
-### AI Image Generator
-Generate images with natural language:
+### 🖼️ AI Image Generator Workflow (Included!)
+
+The stack includes a **complete, production-ready workflow** that demonstrates the power of combining these services. Here's how it works:
+
+#### Workflow Architecture
+
 ```
-"Generate a photorealistic portrait of a woman at sunset"
-"Create a cartoon-style dragon breathing fire"
-"Make a 1024x1024 landscape painting of mountains"
+User Input
+    ↓
+┌─────────────────────────────────────────┐
+│  Chat Trigger (n8n)                     │
+│  - Receives user messages               │
+│  - Provides interactive chat interface  │
+└─────────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────────┐
+│  Smart Detection                        │
+│  - Checks if message contains "image"   │
+│  - Routes to appropriate path           │
+└─────────────────────────────────────────┘
+    ↓                          ↓
+[IMAGE PATH]              [CHAT PATH]
+    ↓                          ↓
+┌──────────────────────┐  ┌─────────────────┐
+│  Prompt Engineering  │  │  Regular Chat   │
+│  (Ollama/qwen2.5)    │  │  (Ollama/phi4)  │
+│  - Analyzes request  │  │  - Conversational│
+│  - Detects style     │  │  - Helpful       │
+│  - Enhances prompt   │  │  - Contextual   │
+│  - Adds quality tags │  └─────────────────┘
+└──────────────────────┘           ↓
+    ↓                        [Return Response]
+┌──────────────────────┐
+│  Parse JSON Response │
+│  - Extracts positive │
+│  - Extracts negative │
+└──────────────────────┘
+    ↓
+┌──────────────────────┐
+│  Build ComfyUI API   │
+│  - Quality presets   │
+│  - Dimension detect  │
+│  - Style optimize    │
+│  - Generate workflow │
+└──────────────────────┘
+    ↓
+┌──────────────────────┐
+│  POST to ComfyUI     │
+│  - Send prompt       │
+│  - Get prompt_id     │
+└──────────────────────┘
+    ↓
+┌──────────────────────┐
+│  Dynamic Wait        │
+│  - Calculate time    │
+│  - Based on quality  │
+│  - Based on size     │
+└──────────────────────┘
+    ↓
+┌──────────────────────┐
+│  Check Status        │
+│  - Poll history      │
+│  - Verify complete   │
+└──────────────────────┘
+    ↓
+┌──────────────────────┐
+│  Download Image      │
+│  - Get image URL     │
+│  - Fetch binary data │
+└──────────────────────┘
+    ↓
+┌──────────────────────┐
+│  Format Response     │
+│  - Create message    │
+│  - Embed image       │
+│  - Add metadata      │
+└──────────────────────┘
+    ↓
+[Return to User]
 ```
 
-### Intelligent Chatbot
-Local AI chat with phi4:
-```python
-# Fully private, no cloud API needed
-docker exec -it ollama ollama run phi4:latest
+#### Intelligent Features
+
+**1. Smart Style Detection**
+```javascript
+Input: "generate image of Rick and Morty"
+Detection: Cartoon character names → Auto-use cartoon style
+Output: Vibrant cartoon with bold outlines and cel shading
+
+Input: "generate portrait of a woman"
+Detection: Real person + portrait → Photorealistic style
+Output: Professional photography with natural lighting
+
+Input: "generate image of a dragon"
+Detection: Fantasy creature + no style specified → Artistic painting
+Output: Oil painting with dramatic lighting
 ```
 
-### Automated Workflows
-Build with n8n:
-- Auto-generate social media posts with images
-- Analyze documents and create summaries
-- Build custom AI agents
-- Create image galleries from text descriptions
+**2. Quality Control**
+```javascript
+User says: "quick image of a sunset"
+→ Uses draft preset (20 steps, faster)
+
+User says: "high quality landscape image"
+→ Uses high preset (50 steps, detailed)
+
+User says: "ultra detailed portrait"
+→ Uses ultra preset (70 steps, maximum quality)
+```
+
+**3. Automatic Dimensions**
+```javascript
+"portrait image" → 512x768 (portrait orientation)
+"landscape image" → 768x512 (landscape orientation)
+"1024 image" → 1024x1024 (high resolution)
+"4k image" → 2048x2048 (ultra high resolution)
+"phone wallpaper" → 480x853 (mobile)
+```
+
+**4. Dual-Mode Operation**
+```javascript
+"generate image of a sunset"
+→ Routes to IMAGE PATH → Uses ComfyUI
+
+"what's the weather like?"
+→ Routes to CHAT PATH → Uses Ollama chat
+
+"hello, how are you?"
+→ Routes to CHAT PATH → Normal conversation
+```
+
+#### Example Interactions
+
+**Example 1: Simple Image Request**
+```
+User: "generate image of a sunset over mountains"
+
+Workflow Process:
+1. Detects "image" keyword ✓
+2. Ollama enhances: "RAW photo, professional landscape photography 
+   of majestic mountains at sunset, golden hour lighting, warm 
+   orange and purple sky, natural colors, panoramic view..."
+3. Builds ComfyUI workflow (high quality, landscape)
+4. Generates image (35 steps, ~18 seconds)
+5. Returns embedded image with settings
+
+User receives: Beautiful sunset image + metadata
+```
+
+**Example 2: Cartoon Style**
+```
+User: "generate cartoon image of a friendly dragon"
+
+Workflow Process:
+1. Detects "image" + "cartoon" ✓
+2. Ollama creates cartoon prompt: "digital illustration of 
+   friendly dragon, cartoon style, vibrant colors, bold 
+   outlines, cel shaded..."
+3. Adjusts sampler to "euler" (better for cartoons)
+4. CFG set to 11.0 (stronger style adherence)
+5. Generates vibrant cartoon image
+
+User receives: Colorful cartoon dragon
+```
+
+**Example 3: Quality + Size Control**
+```
+User: "generate ultra quality 1024 portrait of a woman"
+
+Workflow Process:
+1. Detects: "ultra" → 70 steps
+2. Detects: "1024" → 1024x1024 resolution
+3. Detects: "portrait" → portrait composition keywords
+4. Ollama adds: "detailed facial features, realistic skin 
+   texture, professional portrait photography..."
+5. Generates high-quality portrait (~38 seconds)
+
+User receives: Ultra-detailed portrait image
+```
+
+**Example 4: Regular Chat**
+```
+User: "tell me about the weather today"
+
+Workflow Process:
+1. No "image" keyword detected
+2. Routes to chat path
+3. Ollama (phi4) responds conversationally
+4. No ComfyUI involved
+
+User receives: Helpful text response
+```
+
+#### Workflow Benefits
+
+✅ **Intelligent** - Automatically detects style, quality, and dimensions
+✅ **Fast** - Dynamic wait times based on complexity
+✅ **Flexible** - Works for images AND regular chat
+✅ **Quality** - Professional prompt engineering built-in
+✅ **User-Friendly** - Simple natural language interface
+✅ **Extensible** - Easy to customize and expand
+
+### 🚀 More Workflow Ideas
+
+Once you understand the included workflow, you can build:
+
+**Content Creation Pipeline**
+```
+Schedule Trigger → Ollama (generate topic) → Ollama (write article) 
+→ ComfyUI (create featured image) → Post to WordPress
+```
+
+**Smart Social Media Manager**
+```
+RSS Feed → Ollama (summarize article) → ComfyUI (generate thumbnail)
+→ Ollama (write caption) → Post to Twitter/LinkedIn
+```
+
+**Document Intelligence**
+```
+Watch Folder → Extract text → Generate embeddings → Store in Qdrant
+→ Ollama (answer questions) using RAG
+```
+
+**Image Processing Factory**
+```
+Upload Image → ComfyUI (upscale) → ComfyUI (enhance) 
+→ ComfyUI (style transfer) → Save to cloud
+```
+
+**Custom AI Assistant**
+```
+Webhook → Check Qdrant for context → Ollama (generate response)
+→ Update Qdrant with new context → Return answer
+```
 
 ## 🖼️ Screenshots
 
