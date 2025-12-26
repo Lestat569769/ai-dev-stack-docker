@@ -108,7 +108,7 @@ Complete Docker-based AI development environment with ComfyUI (Stable Diffusion)
 1. **Download the installer**
    ```bash
    cd ~
-   curl -O https://raw.githubusercontent.com/[your-repo]/install-linux-macos.sh
+   curl -O https://raw.githubusercontent.com/Lestat569769/ai-dev-stack-docker/main/install-linux-macos.sh
    chmod +x install-linux-macos.sh
    ```
 
@@ -131,7 +131,7 @@ Complete Docker-based AI development environment with ComfyUI (Stable Diffusion)
 2. **Download and run the installer**
    ```bash
    cd ~
-   curl -O https://raw.githubusercontent.com/[your-repo]/install-linux-macos.sh
+   curl -O https://raw.githubusercontent.com/Lestat569769/ai-dev-stack-docker/main/install-linux-macos.sh
    chmod +x install-linux-macos.sh
    ./install-linux-macos.sh
    ```

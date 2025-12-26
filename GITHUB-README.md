@@ -3,7 +3,7 @@
 > Complete Docker-based AI development environment with ComfyUI, Ollama, n8n, Qdrant, and PostgreSQL
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blue)](https://github.com/yourusername/ai-dev-stack-docker)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blue)](https://github.com/Lestat569769/ai-dev-stack-docker)
 [![Docker](https://img.shields.io/badge/docker-required-2496ED?logo=docker)](https://www.docker.com/)
 
 One-command installation of a complete AI development environment with image generation, local LLMs, workflow automation, and vector storage.
