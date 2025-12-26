@@ -1,5 +1,5 @@
 {
-  "name": "🎨 AI Image Generator - ENHANCED v3",
+  "name": "🎨 AI Image Generator - ENHANCED v3 (Fixed Style Detection)",
   "nodes": [
     {
       "parameters": {
@@ -37,7 +37,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=You are an expert Stable Diffusion prompt engineer.\n\nUser request: {{ $json.chatInput }}\n\nINTELLIGENT STYLE DETECTION:\n\n1. CARTOON/ANIME CHARACTERS (auto-detect):\n   Rick and Morty, SpongeBob, Pokemon, Naruto, Goku, Mickey Mouse, etc.\n   → Automatically use cartoon/anime style even if not specified\n\n2. STYLE KEYWORDS:\n   - \"cartoon\", \"anime\", \"animated\", \"toon\" → Cartoon style\n   - \"painting\", \"watercolor\", \"oil painting\", \"art\" → Painting style\n   - \"3d render\", \"cgi\", \"3d model\" → 3D style\n   - None specified + real subject → Photorealistic\n\n3. SMART DEFAULTS:\n   - Cartoon character + no style → Cartoon (NOT photorealistic)\n   - Fantasy creature + no style → Artistic/painting\n   - Real person/place + no style → Photorealistic\n\nQUALITY ENHANCEMENT (add to EVERY prompt):\n- \"highly detailed\"\n- \"masterpiece\" \n- \"professional\"\n- \"sharp focus\"\n- \"8k\" or \"4k\"\n\nSTYLE FORMULAS:\n\n═══════════════════════════════════════════════\nCARTOON/ANIME\n═══════════════════════════════════════════════\n✓ Positive: digital illustration, cartoon/anime style, vibrant colors, bold outlines, cel shaded, animated style, clean lines, expressive, [subject details], highly detailed, masterpiece, professional cartoon art, sharp focus, 4k\n\n✗ Negative: photorealistic, realistic, RAW photo, photograph, 3D render, blurry, low quality, low resolution, pixelated, distorted, deformed, ugly, bad anatomy, bad proportions\n\nKEY: Be specific about character details (hair color, clothing, expressions)\n\n═══════════════════════════════════════════════\nPAINTING/ART\n═══════════════════════════════════════════════\n✓ Positive: [type] painting (oil/watercolor/acrylic), visible brush strokes, artistic interpretation, painterly technique, textured canvas, rich colors, expressive, [subject details], highly detailed, masterpiece, fine art quality, professional, 4k\n\n✗ Negative: photorealistic, photograph, digital art, 3D render, cartoon, anime, blurry, low quality, amateur, flat colors, distorted\n\nKEY: Specify painting style if mentioned, otherwise default to oil painting\n\n═══════════════════════════════════════════════\n3D/CGI\n═══════════════════════════════════════════════\n✓ Positive: 3D render, CGI, octane render, unreal engine, detailed 3D model, ray tracing, realistic materials, professional lighting, [subject details], highly detailed, masterpiece, professional 3D art, sharp focus, 8k\n\n✗ Negative: photorealistic, flat, 2D, cartoon, sketch, painting, blurry, low quality, low poly, amateur, distorted\n\nKEY: Emphasize technical rendering quality\n\n═══════════════════════════════════════════════\nPHOTOREALISTIC (DEFAULT)\n═══════════════════════════════════════════════\n✓ Positive: RAW photo, professional photography, [subject details], natural lighting, photorealistic, realistic textures, shot on DSLR, cinematic lighting, natural colors, highly detailed, masterpiece, professional, sharp focus, 8k resolution\n\n✗ Negative: blurry, low quality, low resolution, noisy, pixelated, grainy, cartoon, anime, illustration, drawing, sketch, painting, CGI, 3D render, oversaturated, artificial colors, unrealistic, stylized, deformed, distorted, ugly, bad anatomy\n\nKEY: Focus on photography terms and realistic details\n\nCOMPOSITION KEYWORDS (add based on context):\n- People/portraits → \"portrait composition\", \"centered\", \"detailed facial features\"\n- Landscapes → \"wide angle\", \"panoramic view\", \"depth of field\"\n- Objects → \"product photography\", \"studio lighting\", \"clean background\"\n- Action → \"dynamic pose\", \"motion blur\", \"dramatic angle\"\n\nEXAMPLES:\n\n═══════════════════════════════════════════════\nINPUT: \"generate image of Rick and Morty\"\nDETECTION: Cartoon characters → AUTO-USE cartoon style\n{\n  \"positive\": \"digital illustration of Rick and Morty from the animated series, cartoon style, vibrant colors, bold outlines, cel shaded, Rick with spiky blue hair, white lab coat, and cynical expression, Morty with yellow shirt, brown hair, nervous expression, animated style, clean lines, expressive faces, highly detailed, masterpiece, professional cartoon art, sharp focus, 4k\",\n  \"negative\": \"photorealistic, realistic, RAW photo, photograph, 3D render, blurry, low quality, low resolution, pixelated, distorted, deformed, ugly, bad anatomy, bad proportions, wrong colors\"\n}\n\nINPUT: \"generate portrait image of a woman\"\nDETECTION: Real person + portrait → Photorealistic\n{\n  \"positive\": \"RAW photo, professional portrait photography of a woman, natural lighting, photorealistic, detailed facial features, realistic skin texture, beautiful eyes, portrait composition, centered, shot on DSLR with 85mm lens, shallow depth of field, cinematic lighting, natural colors, highly detailed, masterpiece, professional, sharp focus, 8k resolution\",\n  \"negative\": \"blurry, low quality, low resolution, noisy, pixelated, grainy, cartoon, anime, illustration, drawing, painting, CGI, 3D render, oversaturated, artificial colors, unrealistic, deformed, distorted, ugly, bad anatomy\"\n}\n\nINPUT: \"generate landscape image of mountains at sunset\"\nDETECTION: Real landscape → Photorealistic landscape\n{\n  \"positive\": \"RAW photo, professional landscape photography of majestic mountains at sunset, golden hour lighting, warm orange and purple sky, natural colors, panoramic view, wide angle composition, realistic atmospheric perspective, detailed peaks and valleys, shot on DSLR with wide angle lens, depth of field, cinematic, highly detailed, masterpiece, professional, sharp focus, 8k resolution\",\n  \"negative\": \"blurry, low quality, low resolution, noisy, pixelated, cartoon, anime, illustration, painting, CGI, 3D render, oversaturated, artificial colors, unrealistic, stylized, portrait orientation\"\n}\n\nINPUT: \"generate cartoon image of a dragon\"\nDETECTION: Cartoon keyword + fantasy → Cartoon style\n{\n  \"positive\": \"digital illustration of a dragon, cartoon style, vibrant colors, bold outlines, cel shaded, friendly dragon with colorful scales, expressive eyes, playful pose, animated style, clean lines, bright and cheerful, highly detailed, masterpiece, professional cartoon art, sharp focus, 4k\",\n  \"negative\": \"photorealistic, realistic, photograph, 3D render, dark, scary, blurry, low quality, distorted, deformed, ugly, bad anatomy\"\n}\n\nINPUT: \"generate image of a dragon\"\nDETECTION: Fantasy creature + no style → Artistic painting\n{\n  \"positive\": \"detailed fantasy oil painting of a majestic dragon, dramatic lighting, rich vibrant colors, textured scales, powerful wings spread, fierce expression, mythical atmosphere, visible brush strokes, painterly technique, expressive, highly detailed, masterpiece, fine art quality, professional, sharp focus, 4k\",\n  \"negative\": \"photorealistic, photograph, cartoon, anime, 3D render, blurry, low quality, amateur, flat colors, distorted, deformed\"\n}\n\nINPUT: \"generate image anime girl with blue hair\"\nDETECTION: Anime keyword → Anime style\n{\n  \"positive\": \"anime style illustration of girl with flowing blue hair, vibrant anime aesthetic, detailed anime art, cel shaded, bold outlines, large expressive anime eyes, cute face, stylized anime character design, bright colors, clean anime style, beautiful lighting, highly detailed, masterpiece, professional anime artwork, sharp focus, 4k\",\n  \"negative\": \"photorealistic, realistic, photograph, 3D render, western cartoon, blurry, low quality, low resolution, distorted, deformed, ugly, bad anatomy, bad proportions\"\n}\n\nCRITICAL RULES:\n1. ALWAYS detect cartoon/anime characters by name → Use cartoon/anime style automatically\n2. ALWAYS add quality keywords to every prompt: \"highly detailed, masterpiece, professional, sharp focus\"\n3. Be SPECIFIC about subject details (colors, clothing, expressions, features)\n4. Add composition keywords when appropriate (portrait, landscape, panoramic, centered)\n5. Match negative prompts to style (don't block the requested style!)\n6. For photorealistic, emphasize photography terms (RAW photo, DSLR, natural lighting)\n7. For cartoon/anime, emphasize illustration terms (digital illustration, cel shaded, animated style)\n\nOUTPUT FORMAT:\nReturn ONLY valid JSON, no other text:\n{\n  \"positive\": \"comprehensive detailed prompt with quality keywords and composition\",\n  \"negative\": \"comprehensive style-appropriate negative prompt\"\n}"
+        "text": "=You are an expert Stable Diffusion prompt engineer.\n\nUser request: {{ $json.chatInput }}\n\n═══════════════════════════════════════════════════════════════\nCRITICAL STYLE DETECTION LOGIC (APPLY IN THIS EXACT ORDER)\n═══════════════════════════════════════════════════════════════\n\nSTEP 1: CHECK FOR EXPLICIT STYLE KEYWORDS (HIGHEST PRIORITY)\n────────────────────────────────────────────────────────────────\nIf user's request contains these keywords, use the specified style:\n\nCARTOON/ANIMATED:\n- Keywords: \"cartoon\", \"animated\", \"toon\", \"animation style\"\n- → Use CARTOON STYLE (see formula below)\n\nANIME:\n- Keywords: \"anime\", \"manga\", \"anime style\"\n- → Use ANIME STYLE (see formula below)\n\nPAINTING/ARTISTIC:\n- Keywords: \"painting\", \"oil painting\", \"watercolor\", \"art style\", \"painted\"\n- → Use PAINTING STYLE (see formula below)\n\n3D/CGI:\n- Keywords: \"3d render\", \"cgi\", \"3d model\", \"rendered\"\n- → Use 3D STYLE (see formula below)\n\nIf ANY of these keywords are found → Use that style and SKIP to style formulas section\n\n────────────────────────────────────────────────────────────────\nSTEP 2: CHECK FOR KNOWN FICTIONAL CHARACTERS\n────────────────────────────────────────────────────────────────\nIf user mentions these character names, use cartoon/anime style:\n\nCARTOON CHARACTERS:\n- Scooby-Doo, Mickey Mouse, Donald Duck, Bugs Bunny, SpongeBob,\n  Tom and Jerry, Simpsons characters, Family Guy characters,\n  Rick and Morty, etc.\n- → Use CARTOON STYLE\n\nANIME CHARACTERS:\n- Naruto, Goku, Pikachu, Luffy, Sailor Moon, etc.\n- → Use ANIME STYLE\n\nIf character name found → Use appropriate style and SKIP to style formulas\n\n────────────────────────────────────────────────────────────────\nSTEP 3: DEFAULT TO PHOTOREALISTIC (FOR EVERYTHING ELSE)\n────────────────────────────────────────────────────────────────\nIf NO style keywords (Step 1) AND NO fictional characters (Step 2):\n\nALWAYS USE PHOTOREALISTIC STYLE FOR:\n- Real animals: dog, cat, bird, horse, deer, kingfisher, eagle, etc.\n- Real people: man, woman, child, portrait, person, etc.\n- Real places: landscape, city, street, mountain, ocean, etc.\n- Real objects: apple, table, car, building, etc.\n\nDEFAULT RULE:\nIf it exists in real life → PHOTOREALISTIC\nIf user wants different style → They must specify explicitly\n\n────────────────────────────────────────────────────────────────\nEXAMPLES OF CORRECT DETECTION:\n────────────────────────────────────────────────────────────────\n\nINPUT: \"generate image of golden retriever\"\nDETECTION:\n- No style keywords → Continue\n- Not a cartoon character → Continue  \n- \"golden retriever\" = real dog breed → PHOTOREALISTIC\nSTYLE: Photorealistic ✅\n\nINPUT: \"generate cartoon image of golden retriever\"\nDETECTION:\n- \"cartoon\" keyword found → CARTOON\nSTYLE: Cartoon ✅\n\nINPUT: \"generate image of Scooby-Doo\"\nDETECTION:\n- No style keywords → Continue\n- \"Scooby-Doo\" = cartoon character → CARTOON\nSTYLE: Cartoon ✅\n\nINPUT: \"generate image of redbone coonhound\"\nDETECTION:\n- No style keywords → Continue\n- Not a cartoon character → Continue\n- \"redbone coonhound\" = real dog breed → PHOTOREALISTIC\nSTYLE: Photorealistic ✅\n\nINPUT: \"generate image of kingfisher diving\"\nDETECTION:\n- No style keywords → Continue\n- Not a cartoon character → Continue\n- \"kingfisher\" = real bird → PHOTOREALISTIC\nSTYLE: Photorealistic ✅\n\nINPUT: \"generate anime style cat\"\nDETECTION:\n- \"anime style\" keyword found → ANIME\nSTYLE: Anime ✅\n\n═══════════════════════════════════════════════════════════════\nSTYLE FORMULAS\n═══════════════════════════════════════════════════════════════\n\n────────────────────────────────────────────────────────────────\nPHOTOREALISTIC (DEFAULT FOR REAL SUBJECTS)\n────────────────────────────────────────────────────────────────\n\nPOSITIVE TEMPLATE:\nprofessional photography of [SUBJECT], [LIGHTING], [COMPOSITION], realistic, natural, detailed, sharp focus\n\nCOMPONENTS:\n- Photography type: \"professional photography\", \"wildlife photography\", \"portrait photography\", \"landscape photography\"\n- Lighting: \"natural lighting\", \"golden hour\", \"soft lighting\", \"dramatic lighting\"\n- Technical: \"shallow depth of field\", \"bokeh\", \"sharp focus\", \"detailed\"\n- Quality: \"professional\", \"detailed\", \"8k\" (use sparingly)\n\nNEGATIVE (Minimal):\nblurry, low quality, cartoon, anime, illustration, painting, distorted\n\nEXAMPLE:\n{\n  \"positive\": \"professional wildlife photography of golden retriever outdoors, natural lighting, realistic fur texture, detailed, shallow depth of field, sharp focus\",\n  \"negative\": \"blurry, low quality, cartoon, anime, illustration, distorted\"\n}\n\n────────────────────────────────────────────────────────────────\nCARTOON/ANIMATED\n────────────────────────────────────────────────────────────────\n\nPOSITIVE TEMPLATE:\ncartoon style illustration of [SUBJECT], vibrant colors, bold outlines, animated style, clean lines, [CHARACTER DETAILS]\n\nCOMPONENTS:\n- Style markers: \"cartoon style illustration\", \"animated style\", \"cel shaded\"\n- Visual qualities: \"vibrant colors\", \"bold outlines\", \"clean lines\"\n- Character details: specific colors, clothing, expressions\n\nNEGATIVE (Minimal):\nblurry, low quality, photorealistic, photograph, 3d render, messy, distorted\n\nEXAMPLE:\n{\n  \"positive\": \"cartoon style illustration of happy golden retriever, vibrant colors, bold outlines, animated style, friendly expression, clean lines, bright and cheerful\",\n  \"negative\": \"blurry, low quality, photorealistic, photograph, 3d render, distorted\"\n}\n\n────────────────────────────────────────────────────────────────\nANIME\n────────────────────────────────────────────────────────────────\n\nPOSITIVE TEMPLATE:\nanime style illustration of [SUBJECT], detailed anime art, cel shaded, clean linework, [ANIME CHARACTERISTICS]\n\nCOMPONENTS:\n- Style markers: \"anime style illustration\", \"anime aesthetic\"\n- Technical: \"cel shaded\", \"clean linework\", \"detailed shading\"\n- Characteristics: \"large expressive eyes\" (for characters), \"vibrant colors\"\n\nNEGATIVE (Minimal):\nblurry, low quality, photorealistic, photograph, western cartoon, distorted anatomy\n\nEXAMPLE:\n{\n  \"positive\": \"anime style illustration of cat, detailed anime art, cel shaded, clean linework, large expressive eyes, vibrant colors, cute aesthetic\",\n  \"negative\": \"blurry, low quality, photorealistic, photograph, distorted anatomy\"\n}\n\n────────────────────────────────────────────────────────────────\nPAINTING/ARTISTIC\n────────────────────────────────────────────────────────────────\n\nPOSITIVE TEMPLATE:\n[PAINTING TYPE] of [SUBJECT], visible brush strokes, painterly technique, artistic, [COLOR MOOD]\n\nCOMPONENTS:\n- Painting type: \"oil painting\", \"watercolor\", \"acrylic painting\"\n- Technique: \"visible brush strokes\", \"painterly technique\", \"textured canvas\"\n- Mood: \"rich colors\", \"expressive\", \"dramatic\"\n\nNEGATIVE (Minimal):\nblurry, low quality, photograph, digital art, cartoon, flat colors\n\nEXAMPLE:\n{\n  \"positive\": \"oil painting of landscape with mountains, visible brush strokes, painterly technique, rich colors, dramatic lighting, expressive\",\n  \"negative\": \"blurry, low quality, photograph, digital art, cartoon, flat colors\"\n}\n\n────────────────────────────────────────────────────────────────\n3D/CGI\n────────────────────────────────────────────────────────────────\n\nPOSITIVE TEMPLATE:\n3d render of [SUBJECT], detailed 3d model, [RENDER ENGINE], realistic materials, professional lighting\n\nCOMPONENTS:\n- Render markers: \"3d render\", \"octane render\", \"unreal engine\"\n- Technical: \"detailed 3d model\", \"realistic materials\", \"ray tracing\"\n- Quality: \"professional lighting\", \"sharp focus\"\n\nNEGATIVE (Minimal):\nblurry, low quality, flat, 2d, cartoon, low poly, amateur\n\nEXAMPLE:\n{\n  \"positive\": \"3d render of futuristic building, unreal engine, detailed 3d model, realistic materials, ray tracing, professional lighting, sharp focus\",\n  \"negative\": \"blurry, low quality, flat, 2d, cartoon, low poly\"\n}\n\n═══════════════════════════════════════════════════════════════\nQUALITY KEYWORDS (Use Based on User Request)\n═══════════════════════════════════════════════════════════════\n\nSTANDARD (default):\n- \"professional, detailed, sharp focus\"\n\nHIGH QUALITY (if user says \"high quality\", \"detailed\", \"best\"):\n- \"professional, highly detailed, sharp focus, 8k\"\n\nULTRA (if user says \"ultra\", \"extreme\", \"maximum quality\"):\n- \"masterpiece, professional, highly detailed, sharp focus, 8k, ultra realistic\"\n\nQUICK (if user says \"quick\", \"draft\", \"fast\"):\n- \"good quality, clean\"\n\n═══════════════════════════════════════════════════════════════\nCOMPOSITION & LIGHTING KEYWORDS\n═══════════════════════════════════════════════════════════════\n\nAdd these based on subject and context:\n\nPORTRAITS:\n- \"portrait composition, eye level, centered\"\n- \"shallow depth of field, bokeh background\"\n- \"detailed facial features\"\n\nLANDSCAPES:\n- \"wide angle, panoramic view\"\n- \"depth of field, atmospheric perspective\"\n\nACTION/MOTION:\n- \"high shutter speed, frozen motion\"\n- \"dynamic composition\"\n\nLIGHTING (detect from context):\n- Sunset/sunrise → \"golden hour lighting, warm tones\"\n- Night → \"dramatic night lighting, ambient glow\"\n- Indoor → \"natural window light, soft shadows\"\n- Studio → \"professional studio lighting, soft box\"\n\n═══════════════════════════════════════════════════════════════\nCRITICAL RULES\n═══════════════════════════════════════════════════════════════\n\n1. ALWAYS apply style detection in order: Explicit keywords → Fictional characters → Default to photorealistic\n\n2. NEVER use cartoon/anime style for real animals/people unless user explicitly requests it\n\n3. Be SPECIFIC about subject details (colors, features, expressions)\n\n4. Keep prompts CONCISE (70-100 tokens positive, 15-25 tokens negative)\n\n5. Quality keywords should match user's request level (don't add \"masterpiece, 8k\" to every prompt)\n\n6. Composition and lighting keywords should be RELEVANT to the subject\n\n7. Negative prompts should BLOCK THE WRONG STYLES (not create a massive blacklist)\n\n═══════════════════════════════════════════════════════════════\nOUTPUT FORMAT\n═══════════════════════════════════════════════════════════════\n\nReturn ONLY valid JSON, no other text:\n\n{\n  \"positive\": \"concise specific prompt with style, subject details, technical specs, appropriate quality keywords\",\n  \"negative\": \"minimal focused negative prompt blocking wrong styles and common issues\"\n}\n\nTarget token counts:\n- Positive: 60-90 tokens\n- Negative: 15-25 tokens\n- Total: ~100 tokens or less\n\n═══════════════════════════════════════════════════════════════\nEND OF INSTRUCTIONS\n═══════════════════════════════════════════════════════════════"
       },
       "id": "9fed560b-dd4d-4468-8c2b-62335dc9c79b",
       "name": "AI Engineer",
@@ -63,7 +63,7 @@
       ],
       "credentials": {
         "ollamaApi": {
-          "id": "REPLACE_WITH_YOUR_OLLAMA_CREDENTIALS",
+          "id": "xHuYe0MDGOs9IpBW",
           "name": "Local Ollama service"
         }
       }
@@ -83,7 +83,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// CONTAINERIZED COMFYUI BUILD - Updated for Docker\nconst positive = $input.item.json.positive || 'RAW photo, professional photography, highly detailed';\nconst negative = $input.item.json.negative || 'blurry, low quality, distorted, cartoon, anime, CGI';\nconst userRequest = $('Chat Trigger').item.json.chatInput.toLowerCase();\n\n// QUALITY PRESETS - Optimized for photorealism\nconst qualityPresets = {\n  'draft': { steps: 20, cfg: 6.5, sampler: 'dpm_2', scheduler: 'karras' },\n  'normal': { steps: 35, cfg: 6.5, sampler: 'dpm_2', scheduler: 'karras' },\n  'high': { steps: 50, cfg: 6.5, sampler: 'dpm_2', scheduler: 'karras' },\n  'ultra': { steps: 70, cfg: 7.0, sampler: 'dpm_2', scheduler: 'karras' },\n  'extreme': { steps: 100, cfg: 7.0, sampler: 'dpm_2', scheduler: 'karras' }\n};\n\nconst aspectRatios = {\n  'square': { width: 512, height: 512, desc: 'Square 512x512' },\n  'portrait': { width: 512, height: 768, desc: 'Portrait 512x768' },\n  'landscape': { width: 768, height: 512, desc: 'Landscape 768x512' },\n  'tall': { width: 512, height: 1024, desc: 'Tall Portrait 512x1024' },\n  'wide': { width: 1024, height: 512, desc: 'Wide Landscape 1024x512' },\n  '1024': { width: 1024, height: 1024, desc: '1024x1024' },\n  '768': { width: 768, height: 768, desc: '768x768' },\n  'hd': { width: 1280, height: 720, desc: 'HD 1280x720' },\n  'phone': { width: 480, height: 853, desc: 'Phone 480x853' },\n  '4k': { width: 2048, height: 2048, desc: '4K 2048x2048' }\n};\n\nconst models = {\n  'default': 'v1-5-pruned-emaonly.safetensors',\n  'v15': 'v1-5-pruned-emaonly.safetensors',\n  'inpainting': '512-inpainting-ema.safetensors'\n};\n\nlet quality = qualityPresets['high'];\nlet dimensions = aspectRatios['square'];\nlet model = models['default'];\n\n// Auto-detect quality\nif (userRequest.includes('draft') || userRequest.includes('quick')) quality = qualityPresets['draft'];\nelse if (userRequest.includes('ultra') || userRequest.includes('best')) quality = qualityPresets['ultra'];\nelse if (userRequest.includes('extreme') || userRequest.includes('maximum')) quality = qualityPresets['extreme'];\nelse if (userRequest.includes('normal') || userRequest.includes('standard')) quality = qualityPresets['normal'];\nelse if (userRequest.includes('high') || userRequest.includes('detailed')) quality = qualityPresets['high'];\n\n// Auto-detect dimensions\nif (userRequest.includes('4k')) dimensions = aspectRatios['4k'];\nelse if (userRequest.includes('1024')) dimensions = aspectRatios['1024'];\nelse if (userRequest.includes('768')) dimensions = aspectRatios['768'];\nelse if (userRequest.includes('hd')) dimensions = aspectRatios['hd'];\nelse if (userRequest.includes('phone')) dimensions = aspectRatios['phone'];\nelse if (userRequest.includes('tall')) dimensions = aspectRatios['tall'];\nelse if (userRequest.includes('wide')) dimensions = aspectRatios['wide'];\nelse if (userRequest.includes('portrait')) dimensions = aspectRatios['portrait'];\nelse if (userRequest.includes('landscape')) dimensions = aspectRatios['landscape'];\nelse if (userRequest.includes('square')) dimensions = aspectRatios['square'];\n\n// Auto-detect model\nif (userRequest.includes('v15') || userRequest.includes('v1-5')) model = models['v15'];\nelse if (userRequest.includes('inpaint')) model = models['inpainting'];\n\n// ADVANCED PHOTOREALISM ENHANCEMENT\nlet enhancedPositive = positive;\nlet enhancedNegative = negative;\n\n// Detect style intent\nconst isCartoon = userRequest.includes('cartoon') || userRequest.includes('anime') || \n                  positive.includes('cartoon') || positive.includes('anime');\nconst isArtistic = userRequest.includes('painting') || userRequest.includes('watercolor') ||\n                   userRequest.includes('oil painting') || positive.includes('painting');\nconst is3D = userRequest.includes('3d render') || userRequest.includes('cgi');\n\n// DEFAULT: PROFESSIONAL PHOTOREALISM\nif (!isCartoon && !isArtistic && !is3D) {\n  // Check if AI already added RAW photo\n  if (!positive.includes('RAW photo') && !positive.includes('professional photography')) {\n    enhancedPositive = `RAW photo, ${positive}`;\n  }\n  \n  // Add essential photorealism keywords if missing\n  let additions = [];\n  if (!positive.includes('natural') && !positive.includes('realistic light')) {\n    additions.push('natural lighting');\n  }\n  if (!positive.includes('8k') && !positive.includes('high resolution')) {\n    additions.push('8k resolution');\n  }\n  if (!positive.includes('sharp focus')) {\n    additions.push('sharp focus');\n  }\n  \n  if (additions.length > 0) {\n    enhancedPositive = `${enhancedPositive}, ${additions.join(', ')}`;\n  }\n  \n  // COMPREHENSIVE negative prompt\n  enhancedNegative = `${negative}, cartoon, anime, illustration, drawing, sketch, painting, cel shaded, CGI, 3D render, video game graphics, oversaturated, neon colors, artificial colors, unrealistic, stylized, plastic, toy-like`;\n  \n  // Optimal CFG for photorealism\n  quality.cfg = Math.min(quality.cfg, 6.5);\n  quality.sampler = 'dpm_2';\n  quality.scheduler = 'karras';\n}\n\n// CARTOON/ANIME style\nif (isCartoon) {\n  quality.cfg = 11.0;\n  quality.sampler = 'euler';\n  enhancedPositive = positive;\n  enhancedNegative = negative;\n}\n\n// ARTISTIC/PAINTING style  \nif (isArtistic) {\n  quality.cfg = 8.5;\n  quality.sampler = 'euler_ancestral';\n  enhancedPositive = positive;\n  enhancedNegative = negative;\n}\n\n// 3D RENDER style\nif (is3D) {\n  quality.cfg = 8.0;\n  quality.sampler = 'dpm_2';\n  enhancedPositive = positive;\n  enhancedNegative = `${negative}, photorealistic, realistic, natural`;\n}\n\nconst seed = Math.floor(Math.random() * 999999);\n\n// Dynamic wait time\nlet waitTime = 8;\nif (quality.steps <= 25) waitTime = 10;\nelse if (quality.steps <= 40) waitTime = 18;\nelse if (quality.steps <= 55) waitTime = 28;\nelse if (quality.steps <= 75) waitTime = 38;\nelse waitTime = 55;\n\nconst totalPixels = dimensions.width * dimensions.height;\nif (totalPixels >= 2097152) waitTime += 30;\nelse if (totalPixels >= 1048576) waitTime += 18;\nelse if (totalPixels >= 589824) waitTime += 10;\n\n// Build workflow\nconst workflow = {\n  prompt: {\n    \"3\": { inputs: { seed, steps: quality.steps, cfg: quality.cfg, sampler_name: quality.sampler, scheduler: quality.scheduler, denoise: 1.0, model: [\"4\",0], positive:[\"6\",0], negative:[\"7\",0], latent_image:[\"5\",0] }, class_type: \"KSampler\" },\n    \"4\": { inputs: { ckpt_name: model }, class_type: \"CheckpointLoaderSimple\" },\n    \"5\": { inputs: { width: dimensions.width, height: dimensions.height, batch_size: 1 }, class_type: \"EmptyLatentImage\" },\n    \"6\": { inputs: { text: enhancedPositive, clip: [\"4\",1] }, class_type: \"CLIPTextEncode\" },\n    \"7\": { inputs: { text: enhancedNegative, clip: [\"4\",1] }, class_type: \"CLIPTextEncode\" },\n    \"8\": { inputs: { samples: [\"3\",0], vae:[\"4\",2] }, class_type: \"VAEDecode\" },\n    \"9\": { inputs: { filename_prefix: \"ai_generated\", images:[\"8\",0] }, class_type: \"SaveImage\" }\n  },\n  client_id: \"n8n\",\n  metadata: { seed, dimensions: dimensions.desc, steps: quality.steps, cfg: quality.cfg, sampler: quality.sampler, scheduler: quality.scheduler, model, waitTime }\n};\n\nreturn [{json: workflow}];"
+        "jsCode": "// ULTIMATE PHOTOREALISTIC BUILD - v7\nconst positive = $input.item.json.positive || 'RAW photo, professional photography, highly detailed';\nconst negative = $input.item.json.negative || 'blurry, low quality, distorted, cartoon, anime, CGI';\nconst userRequest = $('Chat Trigger').item.json.chatInput.toLowerCase();\n\n// QUALITY PRESETS - Optimized for photorealism\nconst qualityPresets = {\n  'draft': { steps: 20, cfg: 6.5, sampler: 'dpm_2', scheduler: 'karras' },\n  'normal': { steps: 35, cfg: 6.5, sampler: 'dpm_2', scheduler: 'karras' },\n  'high': { steps: 50, cfg: 6.5, sampler: 'dpm_2', scheduler: 'karras' },\n  'ultra': { steps: 70, cfg: 7.0, sampler: 'dpm_2', scheduler: 'karras' },\n  'extreme': { steps: 100, cfg: 7.0, sampler: 'dpm_2', scheduler: 'karras' }\n};\n\nconst aspectRatios = {\n  'square': { width: 512, height: 512, desc: 'Square 512x512' },\n  'portrait': { width: 512, height: 768, desc: 'Portrait 512x768' },\n  'landscape': { width: 768, height: 512, desc: 'Landscape 768x512' },\n  'tall': { width: 512, height: 1024, desc: 'Tall Portrait 512x1024' },\n  'wide': { width: 1024, height: 512, desc: 'Wide Landscape 1024x512' },\n  '1024': { width: 1024, height: 1024, desc: '1024x1024' },\n  '768': { width: 768, height: 768, desc: '768x768' },\n  'hd': { width: 1280, height: 720, desc: 'HD 1280x720' },\n  'phone': { width: 480, height: 853, desc: 'Phone 480x853' },\n  '4k': { width: 2048, height: 2048, desc: '4K 2048x2048' }\n};\n\nconst models = {\n  'default': 'dreamshaper_8.safetensors',\n  'v15': 'v1-5-pruned-emaonly-fp16.safetensors',\n  'inpainting': '512-inpainting-ema.safetensors'\n};\n\nlet quality = qualityPresets['high'];\nlet dimensions = aspectRatios['square'];\nlet model = models['default'];\n\n// Auto-detect quality\nif (userRequest.includes('draft') || userRequest.includes('quick')) quality = qualityPresets['draft'];\nelse if (userRequest.includes('ultra') || userRequest.includes('best')) quality = qualityPresets['ultra'];\nelse if (userRequest.includes('extreme') || userRequest.includes('maximum')) quality = qualityPresets['extreme'];\nelse if (userRequest.includes('normal') || userRequest.includes('standard')) quality = qualityPresets['normal'];\nelse if (userRequest.includes('high') || userRequest.includes('detailed')) quality = qualityPresets['high'];\n\n// Auto-detect dimensions\nif (userRequest.includes('4k')) dimensions = aspectRatios['4k'];\nelse if (userRequest.includes('1024')) dimensions = aspectRatios['1024'];\nelse if (userRequest.includes('768')) dimensions = aspectRatios['768'];\nelse if (userRequest.includes('hd')) dimensions = aspectRatios['hd'];\nelse if (userRequest.includes('phone')) dimensions = aspectRatios['phone'];\nelse if (userRequest.includes('tall')) dimensions = aspectRatios['tall'];\nelse if (userRequest.includes('wide')) dimensions = aspectRatios['wide'];\nelse if (userRequest.includes('portrait')) dimensions = aspectRatios['portrait'];\nelse if (userRequest.includes('landscape')) dimensions = aspectRatios['landscape'];\nelse if (userRequest.includes('square')) dimensions = aspectRatios['square'];\n\n// Auto-detect model\nif (userRequest.includes('v15') || userRequest.includes('v1-5')) model = models['v15'];\nelse if (userRequest.includes('inpaint')) model = models['inpainting'];\n\n// ADVANCED PHOTOREALISM ENHANCEMENT\nlet enhancedPositive = positive;\nlet enhancedNegative = negative;\n\nconst isCartoon = userRequest.includes('cartoon') || userRequest.includes('anime') || positive.includes('cartoon') || positive.includes('anime');\nconst isArtistic = userRequest.includes('painting') || userRequest.includes('watercolor') || userRequest.includes('oil painting') || positive.includes('painting');\nconst is3D = userRequest.includes('3d render') || userRequest.includes('cgi');\n\nif (!isCartoon && !isArtistic && !is3D) {\n  if (!positive.includes('RAW photo') && !positive.includes('professional photography')) {\n    enhancedPositive = `RAW photo, ${positive}`;\n  }\n  \n  let additions = [];\n  if (!positive.includes('natural') && !positive.includes('realistic light')) additions.push('natural lighting');\n  if (!positive.includes('8k') && !positive.includes('high resolution')) additions.push('8k resolution');\n  if (!positive.includes('sharp focus')) additions.push('sharp focus');\n  \n  if (additions.length > 0) enhancedPositive = `${enhancedPositive}, ${additions.join(', ')}`;\n  \n  enhancedNegative = `${negative}, cartoon, anime, illustration, drawing, sketch, painting, cel shaded, CGI, 3D render, video game graphics, oversaturated, neon colors, artificial colors, unrealistic, stylized, plastic, toy-like`;\n  quality.cfg = Math.min(quality.cfg, 6.5);\n  quality.sampler = 'dpm_2';\n  quality.scheduler = 'karras';\n}\n\nif (isCartoon) {\n  quality.cfg = 11.0;\n  quality.sampler = 'euler';\n  enhancedPositive = positive;\n  enhancedNegative = negative;\n}\n\nif (isArtistic) {\n  quality.cfg = 8.5;\n  quality.sampler = 'euler_ancestral';\n  enhancedPositive = positive;\n  enhancedNegative = negative;\n}\n\nif (is3D) {\n  quality.cfg = 8.0;\n  quality.sampler = 'dpm_2';\n  enhancedPositive = positive;\n  enhancedNegative = `${negative}, photorealistic, realistic, natural`;\n}\n\nconst seed = Math.floor(Math.random() * 999999);\n\nlet waitTime = 8;\nif (quality.steps <= 25) waitTime = 10;\nelse if (quality.steps <= 40) waitTime = 18;\nelse if (quality.steps <= 55) waitTime = 28;\nelse if (quality.steps <= 75) waitTime = 38;\nelse waitTime = 55;\n\nconst totalPixels = dimensions.width * dimensions.height;\nif (totalPixels >= 2097152) waitTime += 30;\nelse if (totalPixels >= 1048576) waitTime += 18;\nelse if (totalPixels >= 589824) waitTime += 10;\n\nconst workflow = {\n  prompt: {\n    \"3\": { inputs: { seed, steps: quality.steps, cfg: quality.cfg, sampler_name: quality.sampler, scheduler: quality.scheduler, denoise: 1.0, model: [\"4\",0], positive:[\"6\",0], negative:[\"7\",0], latent_image:[\"5\",0] }, class_type: \"KSampler\" },\n    \"4\": { inputs: { ckpt_name: model }, class_type: \"CheckpointLoaderSimple\" },\n    \"5\": { inputs: { width: dimensions.width, height: dimensions.height, batch_size: 1 }, class_type: \"EmptyLatentImage\" },\n    \"6\": { inputs: { text: enhancedPositive, clip: [\"4\",1] }, class_type: \"CLIPTextEncode\" },\n    \"7\": { inputs: { text: enhancedNegative, clip: [\"4\",1] }, class_type: \"CLIPTextEncode\" },\n    \"8\": { inputs: { samples: [\"3\",0], vae:[\"4\",2] }, class_type: \"VAEDecode\" },\n    \"9\": { inputs: { filename_prefix: \"ai_generated\", images:[\"8\",0] }, class_type: \"SaveImage\" }\n  },\n  client_id: \"n8n\",\n  metadata: { seed, dimensions: dimensions.desc, steps: quality.steps, cfg: quality.cfg, sampler: quality.sampler, scheduler: quality.scheduler, model, waitTime }\n};\n\nreturn [{json: workflow}];"
       },
       "id": "77475c87-93a9-4484-a292-669c38e6d1e9",
       "name": "Build Enhanced",
@@ -97,7 +97,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://comfyui:8188/prompt",
+        "url": "http://host.docker.internal:8188/prompt",
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
@@ -163,7 +163,7 @@
     },
     {
       "parameters": {
-        "url": "=http://comfyui:8188/history/{{ $json.promptId }}",
+        "url": "=http://host.docker.internal:8188/history/{{ $json.promptId }}",
         "options": {}
       },
       "id": "7de6f669-c4b5-470f-85f9-9e34316bc089",
@@ -190,7 +190,7 @@
     },
     {
       "parameters": {
-        "url": "=http://comfyui:8188/view?filename={{ $json.filename }}&subfolder={{ $json.subfolder }}&type={{ $json.type }}",
+        "url": "=http://host.docker.internal:8188/view?filename={{ $json.filename }}&subfolder={{ $json.subfolder }}&type={{ $json.type }}",
         "options": {
           "response": {
             "response": {
@@ -210,6 +210,30 @@
     },
     {
       "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "text",
+              "type": "string",
+              "value": "=✨ **Image Generated!**\n\n**Filename:** {{ $('Extract').item.json.filename }}\n\n**Settings:**\n• Size: {{ $('Store').item.json.metadata.dimensions }}\n• Steps: {{ $('Store').item.json.metadata.steps }}\n• CFG: {{ $('Store').item.json.metadata.cfg }}\n• Sampler: {{ $('Store').item.json.metadata.sampler }} ({{ $('Store').item.json.metadata.scheduler }})\n• Model: {{ $('Store').item.json.metadata.model }}\n• Seed: {{ $('Store').item.json.metadata.seed }}\n\n**Location:**\nComfyUI/output/{{ $('Extract').item.json.filename }}\n\n**View in Browser:**\nhttp://localhost:8188/view?filename={{ $('Extract').item.json.filename }}&type=output\n\n🎨 Your AI-generated image is ready!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "29c24c43-c272-47da-b83b-66fa1ea6d6bd",
+      "name": "Done",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        14512,
+        416
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
         "promptType": "define",
         "text": "={{ $json.chatInput }}"
       },
@@ -218,8 +242,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.5,
       "position": [
-        12704,
-        656
+        12688,
+        720
       ]
     },
     {
@@ -237,7 +261,7 @@
       ],
       "credentials": {
         "ollamaApi": {
-          "id": "REPLACE_WITH_YOUR_OLLAMA_CREDENTIALS",
+          "id": "xHuYe0MDGOs9IpBW",
           "name": "Local Ollama service"
         }
       }
@@ -270,7 +294,7 @@
         "public": true,
         "availableInChat": true,
         "agentName": "AI Image Generator",
-        "agentDescription": "Generate images with ComfyUI and chat with Ollama",
+        "agentDescription": "Generate AI images with ComfyUI and chat with Ollama",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
@@ -281,189 +305,80 @@
       ],
       "id": "b0db2a8a-fbc5-4fc2-9b6f-6513fabc20b8",
       "name": "Chat Trigger",
-      "webhookId": "WILL_BE_GENERATED_ON_IMPORT"
+      "webhookId": "db604b2c-9149-41f1-bcc1-b1a5f38a1f3b"
     },
     {
       "parameters": {
-        "jsCode": "// Get the binary data from Download Image node\nconst binaryData = $input.item.binary.data;\n\n// Get metadata for message\nconst metadata = $('Store').item.json.metadata;\nconst filename = $('Extract').item.json.filename;\n\n// Create the image URL (using localhost for browser access)\nconst imageUrl = `http://localhost:8188/view?filename=${filename}&type=output`;\n\n// Create formatted message with embedded image\nconst message = `✨ **Image Generated Successfully!**\n\n![Generated Image](${imageUrl})\n\n**Filename:** ${filename}\n\n**Settings:**\n- Dimensions: ${metadata.dimensions}\n- Steps: ${metadata.steps}\n- CFG: ${metadata.cfg}\n- Sampler: ${metadata.sampler}\n- Scheduler: ${metadata.scheduler}\n- Model: ${metadata.model}\n- Seed: ${metadata.seed}\n\n[🖼️ View Full Size](${imageUrl})\n\n🎨 Your AI-generated image is ready!`;\n\n// Return both the formatted message AND binary data\nreturn [{\n  json: {\n    output: message\n  },\n  binary: {\n    data: binaryData\n  }\n}];"
+        "jsCode": "const binaryData = $input.item.binary.data;\nconst metadata = $('Store').item.json.metadata;\nconst filename = $('Extract').item.json.filename;\nconst imageUrl = `http://localhost:8188/view?filename=${filename}&type=output`;\n\nconst message = `✨ **Image Generated Successfully!**\n\n![Generated Image](${imageUrl})\n\n**Filename:** ${filename}\n\n**Settings:**\n- Dimensions: ${metadata.dimensions}\n- Steps: ${metadata.steps}\n- CFG: ${metadata.cfg}\n- Sampler: ${metadata.sampler}\n- Scheduler: ${metadata.scheduler}\n- Model: ${metadata.model}\n- Seed: ${metadata.seed}\n\n[🖼️ View Full Size](${imageUrl})\n\n🎨 Your AI-generated image is ready!`;\n\nreturn [{\n  json: { output: message },\n  binary: { data: binaryData }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         14496,
-        416
+        624
       ],
       "id": "e6857c7f-d511-4d08-ba93-4b7c42a9fc73",
-      "name": "Format Response"
+      "name": "Code in JavaScript",
+      "notesInFlow": false
     }
   ],
   "pinData": {},
   "connections": {
     "Contains 'image'?": {
-      "main": [
-        [
-          {
-            "node": "AI Engineer",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Chat",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "AI Engineer", "type": "main", "index": 0}], [{"node": "Chat", "type": "main", "index": 0}]]
     },
     "AI Engineer": {
-      "main": [
-        [
-          {
-            "node": "Parse",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Parse", "type": "main", "index": 0}]]
     },
     "Ollama": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Engineer",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
+      "ai_languageModel": [[{"node": "AI Engineer", "type": "ai_languageModel", "index": 0}]]
     },
     "Parse": {
-      "main": [
-        [
-          {
-            "node": "Build Enhanced",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Build Enhanced", "type": "main", "index": 0}]]
     },
     "Build Enhanced": {
-      "main": [
-        [
-          {
-            "node": "POST",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "POST", "type": "main", "index": 0}]]
     },
     "POST": {
-      "main": [
-        [
-          {
-            "node": "Store",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Store", "type": "main", "index": 0}]]
     },
     "Check": {
-      "main": [
-        [
-          {
-            "node": "Extract",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Extract", "type": "main", "index": 0}]]
     },
     "Extract": {
-      "main": [
-        [
-          {
-            "node": "Download Image",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Download Image", "type": "main", "index": 0}]]
     },
     "Download Image": {
-      "main": [
-        [
-          {
-            "node": "Format Response",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Code in JavaScript", "type": "main", "index": 0}]]
     },
     "Chat": {
-      "main": [
-        [
-          {
-            "node": "Format",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Format", "type": "main", "index": 0}]]
     },
     "Ollama2": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Chat",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
+      "ai_languageModel": [[{"node": "Chat", "type": "ai_languageModel", "index": 0}]]
     },
     "Store": {
-      "main": [
-        [
-          {
-            "node": "Dynamic Wait",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Dynamic Wait", "type": "main", "index": 0}]]
     },
     "Dynamic Wait": {
-      "main": [
-        [
-          {
-            "node": "Check",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Check", "type": "main", "index": 0}]]
     },
     "Chat Trigger": {
-      "main": [
-        [
-          {
-            "node": "Contains 'image'?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Contains 'image'?", "type": "main", "index": 0}]]
+    },
+    "Code in JavaScript": {
+      "main": [[{"node": "Done", "type": "main", "index": 0}]]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "availableInMCP": false
   },
+  "versionId": "d922987c-2a01-4e44-9726-cd0f70ce3515",
+  "meta": {
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "mxD49DtykKpKuf4O",
   "tags": []
 }
