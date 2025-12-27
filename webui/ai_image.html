@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎨 AI Image Generator - Real-Time</title>
+    <title>AI Assistant</title>
     <style>
         * {
             margin: 0;
@@ -11,211 +11,358 @@
             box-sizing: border-box;
         }
 
+        :root {
+            /* Dark mode (default) */
+            --bg-primary: #343541;
+            --bg-secondary: #202123;
+            --bg-tertiary: #444654;
+            --bg-input: #40414f;
+            --bg-hover: #2a2b32;
+            --border-color: var(--border-color);
+            --text-primary: #ececf1;
+            --text-secondary: #c5c5d2;
+            --text-muted: #8e8ea0;
+            --code-bg: #2a2b32;
+            --accent-green: #19c37d;
+            --accent-green-hover: #1a9c65;
+        }
+
+        body.light-mode {
+            /* Light mode */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f7f8;
+            --bg-tertiary: #ffffff;
+            --bg-input: #ffffff;
+            --bg-hover: #ececf1;
+            --border-color: #d9d9e3;
+            --text-primary: #343541;
+            --text-secondary: #565869;
+            --text-muted: #8e8ea0;
+            --code-bg: #f7f7f8;
+            --accent-green: #10a37f;
+            --accent-green-hover: #0e8c6f;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
             height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        .chat-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 900px;
-            height: 90vh;
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
             display: flex;
             flex-direction: column;
-            transition: all 0.3s ease;
+            border-right: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
         }
 
-        .chat-container.fullscreen {
-            max-width: 95vw;
-            height: 95vh;
+        .sidebar-header {
+            padding: 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .new-chat-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .new-chat-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-hover);
+        }
+
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .history-item {
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: background 0.2s;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .history-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .history-item.active {
+            background: var(--bg-primary);
+        }
+
+        .history-item-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .delete-chat-btn {
+            opacity: 0;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 4px;
+            font-size: 16px;
+        }
+
+        .history-item:hover .delete-chat-btn {
+            opacity: 1;
+        }
+
+        .sidebar-footer {
+            padding: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-btn {
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 14px;
+            text-align: left;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .footer-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        /* Main Chat Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .chat-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 25px;
+            padding: 12px 16px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-radius: 20px 20px 0 0;
         }
 
-        .chat-title {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .chat-controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .control-btn {
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            border-radius: 20px;
+        .model-selector {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
-            transition: all 0.2s;
-            backdrop-filter: blur(10px);
-        }
-
-        .control-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
         }
 
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 30px;
-            background: #f8f9fa;
+            background: var(--bg-primary);
+        }
+
+        .message-group {
+            border-bottom: 1px solid var(--border-color);
         }
 
         .message {
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            animation: slideIn 0.3s ease;
+            padding: 24px;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .message.user {
+            background: var(--bg-primary);
         }
 
-        .message.user { align-items: flex-end; }
-        .message.bot { align-items: flex-start; }
+        .message.assistant {
+            background: var(--bg-tertiary);
+        }
 
         .message-content {
-            max-width: 80%;
-            padding: 15px 20px;
-            border-radius: 18px;
-            word-wrap: break-word;
+            font-size: 16px;
+            line-height: 1.75;
+            color: var(--text-primary);
         }
 
-        .message.user .message-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .message.bot .message-content {
-            background: white;
-            color: #333;
-            border: 2px solid #e9ecef;
+        .message-content strong {
+            font-weight: 600;
         }
 
         .message-image {
             max-width: 100%;
-            margin-top: 15px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 12px;
             cursor: pointer;
-            transition: transform 0.2s;
         }
 
-        .message-image:hover { transform: scale(1.02); }
+        /* Code blocks */
+        .message-content pre {
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 12px 0;
+            position: relative;
+        }
 
-        .status-indicator {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 20px;
+        .message-content code {
+            font-family: 'Courier New', monospace;
             font-size: 14px;
-            margin: 10px 0;
+            color: var(--text-primary);
+        }
+
+        .code-block-wrapper {
+            position: relative;
+            margin: 12px 0;
+        }
+
+        .code-header {
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-language {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .copy-code-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .copy-code-btn:hover {
+            background: var(--bg-input);
+        }
+
+        .copy-code-btn.copied {
+            background: #10a37f;
+            border-color: #10a37f;
+        }
+
+        .mode-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 8px;
             font-weight: 500;
         }
 
-        .status-processing {
-            background: #fff3cd;
-            color: #856404;
-            border: 2px solid #ffc107;
+        .mode-badge.chat {
+            background: #1a7f64;
+            color: white;
         }
 
-        .status-completed {
-            background: #d4edda;
-            color: #155724;
-            border: 2px solid #28a745;
+        .mode-badge.image {
+            background: #8e44ad;
+            color: white;
+        }
+
+        .progress-container {
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--bg-hover);
+            border-radius: 8px;
         }
 
         .progress-bar {
             width: 100%;
-            height: 8px;
-            background: #e9ecef;
-            border-radius: 4px;
+            height: 6px;
+            background: #565869;
+            border-radius: 3px;
             overflow: hidden;
-            margin: 10px 0;
+            margin-bottom: 8px;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            transition: width 0.4s ease;
-            animation: pulse 1.5s ease-in-out infinite;
+            background: #10a37f;
+            transition: width 0.3s ease;
+            border-radius: 3px;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-
-        .chat-input-container {
-            padding: 20px;
-            background: white;
-            border-top: 2px solid #e9ecef;
+        .progress-text {
+            font-size: 12px;
+            color: var(--text-secondary);
             display: flex;
-            gap: 10px;
-            border-radius: 0 0 20px 20px;
+            justify-content: space-between;
         }
-
-        .chat-input {
-            flex: 1;
-            padding: 15px 20px;
-            border: 2px solid #e9ecef;
-            border-radius: 25px;
-            font-size: 16px;
-            outline: none;
-        }
-
-        .chat-input:focus { border-color: #667eea; }
-
-        .send-button {
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .send-button:hover { transform: translateY(-2px); }
-        .send-button:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .loading {
-            display: flex;
-            gap: 8px;
-            padding: 15px;
+            display: inline-flex;
+            gap: 4px;
         }
 
         .loading-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #667eea;
-            animation: bounce 1.4s infinite ease-in-out both;
+            background: #8e8ea0;
+            animation: bounce 1.4s infinite ease-in-out;
         }
 
         .loading-dot:nth-child(1) { animation-delay: -0.32s; }
@@ -226,387 +373,763 @@
             40% { transform: scale(1); }
         }
 
-        .metadata {
-            font-size: 12px;
-            opacity: 0.7;
-            margin-top: 10px;
-            padding: 10px;
-            background: #f8f9fa;
+        /* Input Area */
+        .input-container {
+            padding: 24px;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .input-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .chat-input {
+            width: 100%;
+            min-height: 24px;
+            max-height: 200px;
+            padding: 12px 52px 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+        }
+
+        .chat-input:focus {
+            border-color: var(--text-muted);
+        }
+
+        .send-button {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            width: 32px;
+            height: 32px;
+            background: var(--accent-green);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .send-button:hover:not(:disabled) {
+            background: var(--accent-green-hover);
+        }
+
+        .send-button:disabled {
+            background: #565869;
+            cursor: not-allowed;
+        }
+
+        .quick-actions {
+            max-width: 800px;
+            margin: 0 auto 16px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .quick-action-btn {
+            padding: 8px 12px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-action-btn:hover {
+            background: var(--bg-input);
+            border-color: var(--text-muted);
+        }
+
+        /* Empty state */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .empty-state h2 {
+            font-size: 32px;
+            margin-bottom: 32px;
+            color: var(--text-primary);
+        }
+
+        .example-prompts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .example-card {
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .example-card:hover {
+            background: #4a4b5a;
+            border-color: var(--text-muted);
+        }
+
+        .example-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .example-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #565869;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6e6e80;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <div class="chat-title">🎨 AI Image Generator</div>
-            <div class="chat-controls">
-                <button class="control-btn" onclick="toggleFullscreen()">⛶ Expand</button>
-                <button class="control-btn" onclick="clearChat()">🗑️ Clear</button>
-                <button class="control-btn" onclick="newChat()">➕ New</button>
-            </div>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <button class="new-chat-btn" onclick="newChat()">
+                <span>➕</span>
+                <span>New chat</span>
+            </button>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
+                <span id="themeIcon">☀️</span>
+            </button>
         </div>
 
-        <div class="chat-messages" id="chatMessages">
-            <div class="message bot">
-                <div class="message-content">
-                    <strong>Welcome! ✨</strong><br><br>
-                    I can generate images for you using Stable Diffusion.<br><br>
-                    Try: "generate image of a sunset over the ocean"
-                </div>
-            </div>
+        <div class="chat-history" id="chatHistory">
         </div>
 
-        <div class="chat-input-container">
-            <input 
-                type="text" 
-                class="chat-input" 
-                id="chatInput" 
-                placeholder="Type your message..."
-                onkeypress="if(event.key==='Enter') sendMessage()"
-            >
-            <button class="send-button" id="sendButton" onclick="sendMessage()">
-                Send
+        <div class="sidebar-footer">
+            <button class="footer-btn" onclick="clearAllHistory()">
+                🗑️ Clear conversations
             </button>
         </div>
     </div>
 
-<script>
-    const WEBHOOK_URL = 'http://192.168.50.202:5678/webhook/db604b2c-9149-41f1-bcc1-b1a5f38a1f3b/chat';
-    const COMFYUI_HISTORY_URL = 'http://localhost:8188/history';
-    const COMFYUI_QUEUE_URL = 'http://localhost:8188/queue';
+    <div class="main-content">
+        <div class="chat-header">
+            <select class="model-selector">
+                <option>AI Assistant</option>
+            </select>
+        </div>
 
-    let isProcessing = false;
-    let activePolling = new Set();
+        <div class="chat-messages" id="messages">
+        </div>
 
-    async function sendMessage() {
-        const input = document.getElementById('chatInput');
-        const message = input.value.trim();
-        if (!message || isProcessing) return;
+        <div class="input-container">
+            <div class="quick-actions">
+                <button class="quick-action-btn" onclick="insertExample('create image of sunset over mountains')">
+                    🌄 Create sunset image
+                </button>
+                <button class="quick-action-btn" onclick="insertExample('create image of cute cat')">
+                    🐱 Create cat image
+                </button>
+                <button class="quick-action-btn" onclick="insertExample('What is artificial intelligence?')">
+                    💬 Explain AI
+                </button>
+            </div>
+            <div class="input-wrapper">
+                <textarea 
+                    id="userInput" 
+                    class="chat-input" 
+                    placeholder="Send a message..."
+                    rows="1"
+                ></textarea>
+                <button id="sendBtn" class="send-button" onclick="sendMessage()">
+                    ➤
+                </button>
+            </div>
+        </div>
+    </div>
 
-        addMessage(message, 'user');
-        input.value = '';
+    <script>
+        const messagesDiv = document.getElementById('messages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatHistoryDiv = document.getElementById('chatHistory');
 
-        isProcessing = true;
-        document.getElementById('sendButton').disabled = true;
-        const loadingId = addLoading();
+        let currentChatId = generateChatId();
+        let chatHistory = {};
+        let hasMessages = false;
 
-        try {
-            const response = await fetch(WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chatInput: message })
-            });
+        function initializeApp() {
+            chatHistory = loadChatHistory();
+            showEmptyState();
+            loadTheme();
+        }
 
-            removeLoading(loadingId);
+        initializeApp();
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const text = await response.text();
-            if (!text || text.trim() === '') {
-                startImagePolling(null, null); // no jobId; fallback to monitoring latest
+        // Theme Management
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
             } else {
-                try {
-                    const data = JSON.parse(text);
-                    handleResponse(data, message);
-                } catch {
-                    addMessage(text, 'bot');
+                body.classList.add('light-mode');
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                themeIcon.textContent = '🌙';
+            } else {
+                themeIcon.textContent = '☀️';
+            }
+        }
+
+        function showEmptyState() {
+            messagesDiv.innerHTML = `
+                <div class="empty-state">
+                    <h2>🎨 AI Assistant</h2>
+                    <div class="example-prompts">
+                        <div class="example-card" onclick="insertExample('create image of golden retriever')">
+                            <div class="example-title">🎨 Create Image</div>
+                            <div class="example-text">Generate stunning images from descriptions</div>
+                        </div>
+                        <div class="example-card" onclick="insertExample('What is machine learning?')">
+                            <div class="example-title">💬 Ask Questions</div>
+                            <div class="example-text">Get answers to any question</div>
+                        </div>
+                        <div class="example-card" onclick="insertExample('create cartoon image of happy dog')">
+                            <div class="example-title">🎭 Cartoon Style</div>
+                            <div class="example-text">Create cartoon-style illustrations</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateChatId() {
+            return 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function loadChatHistory() {
+            const history = localStorage.getItem('chatHistory');
+            const parsed = history ? JSON.parse(history) : {};
+            updateHistorySidebar();
+            return parsed;
+        }
+
+        function saveChatHistory() {
+            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+            updateHistorySidebar();
+        }
+
+        function saveCurrentChat() {
+            if (!hasMessages) return;
+
+            const messages = Array.from(messagesDiv.querySelectorAll('.message')).map(msg => ({
+                type: msg.classList.contains('user') ? 'user' : 'assistant',
+                content: msg.querySelector('.message-content').innerHTML
+            }));
+
+            if (messages.length > 0) {
+                chatHistory[currentChatId] = {
+                    id: currentChatId,
+                    messages: messages,
+                    timestamp: Date.now(),
+                    title: extractChatTitle(messages)
+                };
+                saveChatHistory();
+            }
+        }
+
+        function extractChatTitle(messages) {
+            const firstUserMsg = messages.find(m => m.type === 'user');
+            if (firstUserMsg) {
+                const text = firstUserMsg.content.replace(/<[^>]*>/g, '');
+                return text.substring(0, 30) + (text.length > 30 ? '...' : '');
+            }
+            return 'New Chat';
+        }
+
+        function updateHistorySidebar() {
+            const chats = Object.values(chatHistory).sort((a, b) => b.timestamp - a.timestamp);
+            
+            if (chats.length === 0) {
+                chatHistoryDiv.innerHTML = '<div style="padding: 12px; text-align: center; color: var(--text-muted); font-size: 14px;">No conversations yet</div>';
+            } else {
+                chatHistoryDiv.innerHTML = chats.map(chat => `
+                    <div class="history-item ${chat.id === currentChatId ? 'active' : ''}" onclick="loadChat('${chat.id}')">
+                        <span class="history-item-text">${chat.title}</span>
+                        <button class="delete-chat-btn" onclick="event.stopPropagation(); deleteChat('${chat.id}')">🗑️</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function newChat() {
+            saveCurrentChat();
+            currentChatId = generateChatId();
+            hasMessages = false;
+            showEmptyState();
+            updateHistorySidebar();
+            userInput.focus();
+        }
+
+        function loadChat(chatId) {
+            saveCurrentChat();
+            
+            const chat = chatHistory[chatId];
+            if (chat) {
+                currentChatId = chatId;
+                hasMessages = true;
+                messagesDiv.innerHTML = '';
+                
+                chat.messages.forEach(msg => {
+                    const messageGroup = document.createElement('div');
+                    messageGroup.className = 'message-group';
+                    
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${msg.type}`;
+                    
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'message-content';
+                    contentDiv.innerHTML = msg.content;
+                    
+                    messageDiv.appendChild(contentDiv);
+                    messageGroup.appendChild(messageDiv);
+                    messagesDiv.appendChild(messageGroup);
+                });
+                
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                updateHistorySidebar();
+            }
+        }
+
+        function deleteChat(chatId) {
+            if (confirm('Delete this conversation?')) {
+                delete chatHistory[chatId];
+                saveChatHistory();
+                if (chatId === currentChatId) {
+                    newChat();
                 }
             }
-
-        } catch (error) {
-            removeLoading(loadingId);
-            addMessage('❌ Connection error: ' + error.message, 'bot');
-        } finally {
-            isProcessing = false;
-            document.getElementById('sendButton').disabled = false;
         }
-    }
 
-    function handleResponse(data, originalMessage) {
-        if (data.status === 'processing') {
-            const msgId = addMessage(`
-                <strong>🎨 Image Generation Started!</strong><br><br>
-                <div class="status-indicator status-processing">
-                    ⏳ Processing... ${data.estimatedTime ? `(estimated: ${data.estimatedTime}s)` : ''}
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 5%"></div>
-                </div>
-                <small>Job ID: ${data.jobId || 'unknown'}</small>
-            `, 'bot');
-
-            startImagePolling(data.jobId, msgId);
-        } else {
-            const responseText = data.text || data.output || data.message || JSON.stringify(data);
-            addMessage(responseText, 'bot');
+        function clearAllHistory() {
+            if (confirm('Delete all conversations? This cannot be undone.')) {
+                chatHistory = {};
+                saveChatHistory();
+                newChat();
+            }
         }
-    }
 
-    // Real-time progress polling:
-    // - If jobId is provided: poll /history/{jobId}
-    // - Else: poll /queue to detect in-progress and use latest /history entry as fallback
-    function startImagePolling(jobId, statusMsgId) {
-        const pollId = Date.now();
-        activePolling.add(pollId);
+        setInterval(() => {
+            saveCurrentChat();
+        }, 30000);
 
-        statusMsgId = addMessage(`
-            <strong>🎨 Generating Your Image...</strong><br><br>
-            <div class="status-indicator status-processing">
-                ⏳ Processing...
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progress-${pollId}" style="width: 5%"></div>
-            </div>
-            <small id="status-text-${pollId}">Initializing...</small>
-        `, 'bot');
+        window.addEventListener('beforeunload', () => {
+            saveCurrentChat();
+        });
 
-        let lastImageFilename = null;
-        let lastProgress = 5;
-        let attempts = 0;
+        userInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
 
-        const interval = setInterval(async () => {
-            attempts++;
-            const progressBar = document.getElementById(`progress-${pollId}`);
-            const statusText = document.getElementById(`status-text-${pollId}`);
+        userInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function insertExample(text) {
+            userInput.value = text;
+            userInput.focus();
+        }
+
+        function formatCodeBlocks(text) {
+            // Match code blocks with optional language specifier
+            const codeBlockPattern = /```(\w+)?\s*\n?([\s\S]*?)```/g;
+            
+            text = text.replace(codeBlockPattern, (match, lang, code) => {
+                const language = lang || 'code';
+                
+                // Clean the code
+                let cleanCode = code.trim();
+                
+                // Escape HTML for display only
+                const escapedCode = cleanCode
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+                
+                // Create a unique ID for this code block
+                const codeId = 'code_' + Math.random().toString(36).substr(2, 9);
+                
+                // Store the code in a temporary element attribute (will be read by click handler)
+                return `<div class="code-block-wrapper">
+                        <div class="code-header">
+                            <span class="code-language">${language.toUpperCase()}</span>
+                            <button class="copy-code-btn" data-code-id="${codeId}">Copy code</button>
+                        </div>
+                        <pre id="${codeId}"><code>${escapedCode}</code></pre>
+                    </div>`;
+            });
+            
+            return text;
+        }
+
+        // Add click event listener for copy buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('copy-code-btn')) {
+                const codeId = e.target.getAttribute('data-code-id');
+                const codeElement = document.getElementById(codeId);
+                if (codeElement) {
+                    const code = codeElement.textContent;
+                    copyCodeBlock(e.target, code);
+                }
+            }
+        });
+
+        function copyCodeBlock(button, code) {
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '✓ Copied!';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                button.textContent = '✗ Failed';
+                setTimeout(() => {
+                    button.textContent = 'Copy code';
+                }, 2000);
+            });
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            if (!hasMessages) {
+                messagesDiv.innerHTML = '';
+                hasMessages = true;
+            }
+
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+
+            addMessage(message, 'user');
+            userInput.value = '';
+            userInput.style.height = 'auto';
+
+            // Better image detection - only trigger on specific phrases
+            const isImageRequest = 
+                message.toLowerCase().includes('create image') || 
+                message.toLowerCase().includes('generate image') ||
+                message.toLowerCase().includes('make image') ||
+                message.toLowerCase().includes('draw image') ||
+                message.toLowerCase().startsWith('create a') && message.toLowerCase().includes('picture') ||
+                message.toLowerCase().startsWith('generate a') && message.toLowerCase().includes('picture');
+
+            const modeClass = isImageRequest ? 'image' : 'chat';
+            const modeText = isImageRequest ? '🎨 Generating image' : '💬 Thinking';
+
+            const loadingId = addMessage(`
+                <span class="mode-badge ${modeClass}">${modeText}</span>
+                <div class="loading">
+                    <div class="loading-dot"></div>
+                    <div class="loading-dot"></div>
+                    <div class="loading-dot"></div>
+                </div>
+            `, 'assistant', true);
 
             try {
-                let data = null;
-
-                if (jobId) {
-                    // Try job-specific history first
-                    const r = await fetch(`${COMFYUI_HISTORY_URL}/${jobId}`);
-                    if (r.ok) data = await r.json();
+                if (isImageRequest) {
+                    await handleImageGeneration(message, loadingId);
+                } else {
+                    await handleChat(message, loadingId);
                 }
-
-                if (!data) {
-                    // General history as fallback
-                    const rh = await fetch(COMFYUI_HISTORY_URL);
-                    if (rh.ok) {
-                        const history = await rh.json();
-                        const entries = Object.entries(history);
-                        if (entries.length > 0) {
-                            const [latestPromptId, latestData] = entries[entries.length - 1];
-                            data = latestData;
-                            if (!jobId) jobId = latestPromptId; // adopt latest if jobId unknown
-                        }
-                    }
-                }
-
-                // Optional: check queue for status hints
-                let queueHint = null;
-                try {
-                    const rq = await fetch(COMFYUI_QUEUE_URL);
-                    if (rq.ok) {
-                        queueHint = await rq.json(); // shape may include 'queue_running' / 'queue_pending'
-                    }
-                } catch {}
-
-                // Parse progress and status
-                let current = 0, total = 100, status = 'executing';
-                let outputs = null;
-
-                if (data && data.status) {
-                    // common fields used by ComfyUI history
-                    current = Number(data.status.current_step || 0);
-                    total = Number(data.status.total_steps || (data.status.max_steps || 100));
-                    status = String(data.status.status || 'executing');
-                }
-
-                // Some builds provide a plain progress value
-                if (data && typeof data.progress === 'number') {
-                    current = Math.floor(data.progress);
-                    total = 100;
-                }
-
-                outputs = data && data.outputs ? data.outputs : null;
-                const computed = total > 0 ? Math.max(5, Math.min(100, Math.floor((current / total) * 100))) : lastProgress;
-                lastProgress = computed;
-
-                if (progressBar) progressBar.style.width = computed + '%';
-
-                // Status text
-                const hints = [];
-                if (statusText) {
-                    if (status) hints.push(`Status: ${status}`);
-                    if (total && current) hints.push(`Step ${current}/${total}`);
-                    if (queueHint && queueHint.queue_running) hints.push(`Running: ${Array.isArray(queueHint.queue_running) ? queueHint.queue_running.length : queueHint.queue_running}`);
-                    if (queueHint && queueHint.queue_pending) hints.push(`Pending: ${Array.isArray(queueHint.queue_pending) ? queueHint.queue_pending.length : queueHint.queue_pending}`);
-                    statusText.textContent = hints.length ? hints.join(' • ') : 'Working...';
-                }
-
-                // Completion detection and image extraction
-                if (outputs) {
-                    // Heuristic: find first output node with images
-                    let imageObj = null;
-                    for (const key of Object.keys(outputs)) {
-                        const out = outputs[key];
-                        if (out && Array.isArray(out.images) && out.images.length > 0) {
-                            imageObj = out.images[0];
-                            break;
-                        }
-                    }
-
-                    if (imageObj && imageObj.filename && imageObj.filename !== lastImageFilename) {
-                        lastImageFilename = imageObj.filename;
-                        const imageUrl = `http://localhost:8188/view?filename=${imageObj.filename}&type=output`;
-
-                        // finalize UI
-                        if (progressBar) progressBar.style.width = '100%';
-
-                        updateMessage(statusMsgId, `
-                            <strong>✨ Image Generated Successfully!</strong><br><br>
-                            <div class="status-indicator status-completed">
-                                ✅ Completed
-                            </div>
-                            <img class="message-image" src="${imageUrl}" alt="Generated Image"
-                                 onclick="window.open('${imageUrl}', '_blank')"
-                                 onerror="this.style.display='none'; console.error('Failed to load image');">
-                            <div class="metadata">
-                                <strong>Filename:</strong> ${imageObj.filename}<br>
-                                <strong>💾 Saved to:</strong> ComfyUI/output/${imageObj.filename}<br>
-                                <strong>Click image to open full size</strong>
-                            </div>
-                        `);
-
-                        clearInterval(interval);
-                        activePolling.delete(pollId);
-                        return;
-                    }
-                }
-
-                // If ComfyUI reports done or progress hits 100 without outputs, give user hints
-                if ((status === 'done' || computed >= 99) && !outputs) {
-                    updateMessage(statusMsgId, `
-                        <strong>⚠️ Completed, but image not found (yet)</strong><br><br>
-                        <div class="status-indicator" style="background:#fff3cd; color:#856404; border-color:#ffc107;">
-                            Image file may still be saving…
-                        </div>
-                        <p><strong>Check manually:</strong></p>
-                        <ul style="text-align:left; margin-left:20px;">
-                            <li><a href="http://localhost:8188" target="_blank">ComfyUI Interface</a></li>
-                            <li>Output folder: <code>D:\\Docker\\ComfyUI_windows_portable\\ComfyUI\\output\\</code></li>
-                            <li>Newest <code>*.png</code> file is your result</li>
-                        </ul>
-                    `);
-                    clearInterval(interval);
-                    activePolling.delete(pollId);
-                    return;
-                }
-
-                // Safety timeout to avoid infinite polling
-                if (attempts >= 60) { // ~2 minutes if interval adjusted; we’ll keep default 2s below
-                    updateMessage(statusMsgId, `
-                        <strong>⚠️ Generation Timeout</strong><br><br>
-                        <div class="status-indicator" style="background:#fff3cd; color:#856404; border-color:#ffc107;">
-                            ⏱️ Taking longer than expected
-                        </div>
-                        <p>Your image may still be generating. You can check progress manually:</p>
-                        <ul style="text-align:left; margin-left:20px;">
-                            <li><a href="http://localhost:8188" target="_blank">ComfyUI Interface</a></li>
-                            <li>Output folder: <code>D:\\Docker\\ComfyUI_windows_portable\\ComfyUI\\output\\</code></li>
-                        </ul>
-                    `);
-                    clearInterval(interval);
-                    activePolling.delete(pollId);
-                }
-
-            } catch (err) {
-                if (statusText) statusText.textContent = 'Polling error — retrying…';
-                console.error('Polling error:', err);
+                saveCurrentChat();
+            } catch (error) {
+                console.error('Error:', error);
+                updateMessage(loadingId, `❌ Error: ${error.message}`);
+            } finally {
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                userInput.focus();
             }
-        }, 1000); // real-time feel: 2s polling
-    }
+        }
 
-    function addMessage(text, sender) {
-        const messagesDiv = document.getElementById('chatMessages');
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${sender}`;
-        messageDiv.id = `msg-${Date.now()}`;
+        async function handleImageGeneration(message, loadingId) {
+            const response = await fetch('http://192.168.50.202:8188/prompt', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt: {
+                        "3": { inputs: { seed: Math.floor(Math.random() * 999999), steps: 50, cfg: 6.5, sampler_name: "dpm_2", scheduler: "karras", denoise: 1.0, model: ["4",0], positive:["6",0], negative:["7",0], latent_image:["5",0] }, class_type: "KSampler" },
+                        "4": { inputs: { ckpt_name: "dreamshaper_8.safetensors" }, class_type: "CheckpointLoaderSimple" },
+                        "5": { inputs: { width: 512, height: 512, batch_size: 1 }, class_type: "EmptyLatentImage" },
+                        "6": { inputs: { text: message, clip: ["4",1] }, class_type: "CLIPTextEncode" },
+                        "7": { inputs: { text: "blurry, low quality, distorted", clip: ["4",1] }, class_type: "CLIPTextEncode" },
+                        "8": { inputs: { samples: ["3",0], vae:["4",2] }, class_type: "VAEDecode" },
+                        "9": { inputs: { filename_prefix: "ai_generated", images:["8",0] }, class_type: "SaveImage" }
+                    },
+                    client_id: "web_interface"
+                })
+            });
 
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'message-content';
-        contentDiv.innerHTML = text;
+            const data = await response.json();
+            const promptId = data.prompt_id;
 
-        messageDiv.appendChild(contentDiv);
-        messagesDiv.appendChild(messageDiv);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            updateMessage(loadingId, `
+                <span class="mode-badge image">🎨 Generating image</span>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-${promptId}" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progress-text-${promptId}">Processing...</span>
+                        <span id="progress-percent-${promptId}">0%</span>
+                    </div>
+                </div>
+            `);
 
-        return messageDiv.id;
-    }
+            await pollProgress(promptId);
 
-    function updateMessage(msgId, newContent) {
-        const msg = document.getElementById(msgId);
-        if (msg) {
-            const contentDiv = msg.querySelector('.message-content');
+            const historyResponse = await fetch(`http://192.168.50.202:8188/history/${promptId}`);
+            const history = await historyResponse.json();
+
+            if (history[promptId] && history[promptId].outputs) {
+                const imageInfo = history[promptId].outputs['9'].images[0];
+                const imageUrl = `http://192.168.50.202:8188/view?filename=${imageInfo.filename}&type=output`;
+
+                updateMessage(loadingId, `
+                    <img src="${imageUrl}" class="message-image" onclick="window.open('${imageUrl}', '_blank')" />
+                `);
+            } else {
+                throw new Error('Image generation failed');
+            }
+        }
+
+        async function pollProgress(promptId) {
+            let progress = 0;
+            const maxAttempts = 100;
+            let attempts = 0;
+
+            while (progress < 100 && attempts < maxAttempts) {
+                try {
+                    const queueResponse = await fetch('http://192.168.50.202:8188/queue');
+                    const queueData = await queueResponse.json();
+
+                    const running = queueData.queue_running;
+                    if (running.length > 0 && running[0][1] === promptId) {
+                        progress = Math.min(95, attempts * 2);
+                        
+                        const progressFill = document.getElementById(`progress-${promptId}`);
+                        const progressPercent = document.getElementById(`progress-percent-${promptId}`);
+
+                        if (progressFill) {
+                            progressFill.style.width = progress + '%';
+                            progressPercent.textContent = Math.floor(progress) + '%';
+                        }
+                    }
+
+                    const historyResponse = await fetch(`http://192.168.50.202:8188/history/${promptId}`);
+                    const history = await historyResponse.json();
+
+                    if (history[promptId]) {
+                        progress = 100;
+                        const progressFill = document.getElementById(`progress-${promptId}`);
+                        const progressText = document.getElementById(`progress-text-${promptId}`);
+                        const progressPercent = document.getElementById(`progress-percent-${promptId}`);
+
+                        if (progressFill) {
+                            progressFill.style.width = '100%';
+                            progressText.textContent = 'Complete!';
+                            progressPercent.textContent = '100%';
+                        }
+                        break;
+                    }
+
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    attempts++;
+                } catch (error) {
+                    console.error('Progress error:', error);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    attempts++;
+                }
+            }
+        }
+
+        async function handleChat(message, loadingId) {
+            try {
+                // Build conversation history from current chat (last 6 messages = 3 exchanges)
+                const messageElements = Array.from(messagesDiv.querySelectorAll('.message')).slice(-6);
+                const conversationHistory = messageElements.map(msg => {
+                    const isUser = msg.classList.contains('user');
+                    const contentDiv = msg.querySelector('.message-content');
+                    // Get text content, strip HTML tags
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = contentDiv.innerHTML;
+                    const content = tempDiv.textContent || tempDiv.innerText || '';
+                    
+                    return {
+                        role: isUser ? 'user' : 'assistant',
+                        content: content.trim().substring(0, 500) // Limit to 500 chars per message
+                    };
+                }).filter(msg => msg.content.length > 0);
+
+                // Prepare request body with conversation history
+                const requestBody = {
+                    chatInput: message
+                };
+
+                // Add conversation history if we have any
+                if (conversationHistory.length > 0) {
+                    requestBody.conversationHistory = conversationHistory;
+                }
+
+                console.log('Sending to n8n:', requestBody); // Debug log
+
+                const response = await fetch('http://192.168.50.202:5678/webhook/db604b2c-9149-41f1-bcc1-b1a5f38a1f3b/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const rawText = await response.text();
+                let responseText = '';
+                
+                if (rawText.includes('"type":"item"') && rawText.includes('"content":"')) {
+                    const contentMatch = rawText.match(/"content":"((?:[^"\\]|\\.)*)"/);
+                    if (contentMatch && contentMatch[1]) {
+                        responseText = contentMatch[1];
+                        responseText = responseText.replace(/\\n/g, '\n');
+                        responseText = responseText.replace(/\\"/g, '"');
+                        responseText = responseText.replace(/\\\\/g, '\\');
+                    }
+                } else {
+                    try {
+                        const data = JSON.parse(rawText);
+                        responseText = data.output || data.text || data.response || data.message || data.content || JSON.stringify(data);
+                    } catch (jsonError) {
+                        responseText = rawText || 'No response received';
+                    }
+                }
+                
+                // CRITICAL: Format code blocks FIRST, before any other formatting
+                responseText = formatCodeBlocks(responseText);
+                
+                // Then format markdown (bold)
+                responseText = responseText.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+                
+                // Only add <br> for line breaks OUTSIDE of code blocks
+                // Split by code blocks, process non-code parts only
+                const parts = responseText.split(/(<div class="code-block-wrapper">[\s\S]*?<\/div>)/);
+                responseText = parts.map((part, index) => {
+                    // Keep code blocks unchanged
+                    if (part.includes('code-block-wrapper')) {
+                        return part;
+                    }
+                    // Replace \n with <br> only in non-code parts
+                    return part.replace(/\n/g, '<br>');
+                }).join('');
+                
+                updateMessage(loadingId, responseText);
+                
+            } catch (error) {
+                console.error('Chat error:', error);
+                throw error;
+            }
+        }
+
+        function addMessage(content, type, returnId = false) {
+            const messageGroup = document.createElement('div');
+            messageGroup.className = 'message-group';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = content;
+            
+            messageDiv.appendChild(contentDiv);
+            messageGroup.appendChild(messageDiv);
+            messagesDiv.appendChild(messageGroup);
+
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            if (returnId) {
+                return messageDiv;
+            }
+        }
+
+        function updateMessage(messageElement, newContent) {
+            const contentDiv = messageElement.querySelector('.message-content');
             if (contentDiv) {
                 contentDiv.innerHTML = newContent;
             }
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
-    }
-
-    function addLoading() {
-        const messagesDiv = document.getElementById('chatMessages');
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message bot';
-        messageDiv.id = 'loading-message';
-
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'message-content';
-
-        const loadingDiv = document.createElement('div');
-        loadingDiv.className = 'loading';
-        loadingDiv.innerHTML = '<div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>';
-
-        contentDiv.appendChild(loadingDiv);
-        messageDiv.appendChild(contentDiv);
-        messagesDiv.appendChild(messageDiv);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-        return 'loading-message';
-    }
-
-    function removeLoading(id) {
-        const loadingMsg = document.getElementById(id);
-        if (loadingMsg) {
-            loadingMsg.remove();
-        }
-    }
-
-    function clearChat() {
-        if (confirm('Clear all messages? This cannot be undone.')) {
-            const messagesDiv = document.getElementById('chatMessages');
-            messagesDiv.innerHTML = '';
-
-            addMessage(`
-                <strong>Welcome! ✨</strong><br><br>
-                I can generate images for you using Stable Diffusion.<br><br>
-                Try: "generate image of a sunset over the ocean"
-            `, 'bot');
-
-            // Cancel any active polling
-            activePolling.clear();
-        }
-    }
-
-    function newChat() {
-        clearChat();
-        document.getElementById('chatInput').focus();
-    }
-
-    function toggleFullscreen() {
-        const container = document.querySelector('.chat-container');
-        const btn = event.target;
-
-        container.classList.toggle('fullscreen');
-        btn.textContent = container.classList.contains('fullscreen') ? '⛶ Shrink' : '⛶ Expand';
-    }
-
-    window.onload = () => {
-        document.getElementById('chatInput').focus();
-    };
-</script>
+    </script>
 </body>
 </html>
