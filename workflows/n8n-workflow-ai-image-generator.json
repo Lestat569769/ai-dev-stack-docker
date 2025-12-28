@@ -1,13 +1,135 @@
 {
-  "name": "🎨 AI Image Generator - ENHANCED v3 (FIXED)",
+  "name": "🎨 AI Image Generator - v7 (COMPLETE FIXED)",
   "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "availableInChat": true,
+        "agentName": "AI Image Generator",
+        "agentDescription": "Chat, analyze images, and generate AI art",
+        "options": {
+          "allowedOrigins": "*",
+          "responseMode": "streaming"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -640,
+        160
+      ],
+      "id": "cdd73e3d-870f-4197-85fb-1a9715435bdc",
+      "name": "Chat Trigger",
+      "webhookId": "db604b2c-9149-41f1-bcc1-b1a5f38a1f3b"
+    },
+    {
+      "parameters": {
+        "jsCode": "const attachments = $json.attachments || [];\n\nconst images = attachments\n  .filter(a => {\n    const mime = a.type || a.mimeType || a.contentType || (a.data?.split(';')[0].replace('data:', ''));\n    return mime && mime.startsWith('image/');\n  })\n  .map(a => ({\n    name: a.name,\n    mimeType: a.type || a.mimeType,\n    data: a.data\n  }));\n\nreturn [{\n  json: {\n    ...$json,\n    images,\n    imageCount: images.length,\n    hasImages: images.length > 0\n  }\n}];"
+      },
+      "id": "26a44de1-6a68-4994-9534-8b41677aca7c",
+      "name": "Check Attachments",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -432,
+        160
+      ]
+    },
     {
       "parameters": {
         "conditions": {
           "options": {
-            "caseSensitive": false,
+            "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "strict"
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.hasImages }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "92a3990b-d44f-490c-99df-d3a7419abb84",
+      "name": "Has Images?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const images = $json.images || [];\nconst chatInput = $json.chatInput || 'What do you see in this image?';\n\nconst prompt = `[User attached ${images.length} image(s)]\\n\\n${chatInput}\\n\\nPlease analyze the image(s) and describe what you see in detail.`;\n\nconst base64Images = images.map(img => {\n  let base64 = img.data;\n  if (base64.includes('base64,')) {\n    base64 = base64.split('base64,')[1];\n  }\n  return base64;\n});\n\nconsole.log('Vision request:', {\n  prompt: prompt.substring(0, 100),\n  imageCount: base64Images.length,\n  firstImageLength: base64Images[0]?.length || 0\n});\n\nreturn [{\n  json: {\n    model: 'llava',\n    prompt: prompt,\n    images: base64Images,\n    stream: false\n  }\n}];"
+      },
+      "id": "35511fc0-83fc-468c-b948-2bcd04e6d648",
+      "name": "Prepare Vision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://192.168.50.56:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "da88fe43-348b-4c46-a432-b9460235eebd",
+      "name": "Llava Direct API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        144,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "text",
+              "type": "string",
+              "value": "={{ $json.response }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0b706603-4809-4bd1-813d-de196c0d6105",
+      "name": "Format Vision Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        336,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
           },
           "conditions": [
             {
@@ -16,8 +138,7 @@
               "rightValue": "image",
               "operator": {
                 "type": "string",
-                "operation": "contains",
-                "singleValue": true
+                "operation": "contains"
               }
             }
           ],
@@ -25,27 +146,27 @@
         },
         "options": {}
       },
-      "id": "ce0178db-c8b8-4cb3-a0be-79cf21a556c7",
+      "id": "15e3b423-92f5-4037-8720-396e51796e12",
       "name": "Contains 'image'?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        14448,
-        1152
+        -464,
+        480
       ]
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=╔═══════════════════════════════════════════════════════════════╗\n║ CRITICAL: CONTEXT RESET - READ THIS FIRST                    ║\n╚═══════════════════════════════════════════════════════════════╝\n\nIGNORE ALL PREVIOUS PROMPTS AND CONVERSATIONS.\nThis is a NEW, INDEPENDENT image generation request.\nDO NOT reference any previous prompts, images, or context.\nONLY use information from THIS current request below.\nStart with a completely fresh mindset.\n\n═══════════════════════════════════════════════════════════════\n\nYou are an expert Stable Diffusion prompt engineer.\n\nUser request: {{ $json.chatInput }}\n\n═══════════════════════════════════════════════════════════════\nCRITICAL STYLE DETECTION LOGIC (APPLY IN THIS EXACT ORDER)\n═══════════════════════════════════════════════════════════════\n\nSTEP 1: CHECK FOR EXPLICIT STYLE KEYWORDS (HIGHEST PRIORITY)\n────────────────────────────────────────────────────────────────\nIf user's request contains these keywords, use the specified style:\n\nCARTOON/ANIMATED:\n- Keywords: \"cartoon\", \"animated\", \"toon\", \"animation style\"\n- → Use CARTOON STYLE (see formula below)\n\nANIME:\n- Keywords: \"anime\", \"manga\", \"anime style\"\n- → Use ANIME STYLE (see formula below)\n\nPAINTING/ARTISTIC:\n- Keywords: \"painting\", \"oil painting\", \"watercolor\", \"art style\", \"painted\"\n- → Use PAINTING STYLE (see formula below)\n\n3D/CGI:\n- Keywords: \"3d render\", \"cgi\", \"3d model\", \"rendered\"\n- → Use 3D STYLE (see formula below)\n\nIf ANY of these keywords are found → Use that style and SKIP to style formulas section\n\n────────────────────────────────────────────────────────────────\nSTEP 2: CHECK FOR KNOWN FICTIONAL CHARACTERS\n────────────────────────────────────────────────────────────────\nIf user mentions these character names, use cartoon/anime style:\n\nCARTOON CHARACTERS:\n- Scooby-Doo, Mickey Mouse, Donald Duck, Bugs Bunny, SpongeBob,\n  Tom and Jerry, Simpsons characters, Family Guy characters,\n  Rick and Morty, etc.\n- → Use CARTOON STYLE\n\nANIME CHARACTERS:\n- Naruto, Goku, Pikachu, Luffy, Sailor Moon, etc.\n- → Use ANIME STYLE\n\nIf character name found → Use appropriate style and SKIP to style formulas\n\n────────────────────────────────────────────────────────────────\nSTEP 3: DEFAULT TO PHOTOREALISTIC (FOR EVERYTHING ELSE)\n────────────────────────────────────────────────────────────────\nIf NO style keywords (Step 1) AND NO fictional characters (Step 2):\n\nALWAYS USE PHOTOREALISTIC STYLE FOR:\n- Real animals: dog, cat, bird, horse, deer, kingfisher, eagle, etc.\n- Real people: man, woman, child, portrait, person, etc.\n- Real places: landscape, city, street, mountain, ocean, etc.\n- Real objects: apple, table, car, building, etc.\n\nDEFAULT RULE:\nIf it exists in real life → PHOTOREALISTIC\nIf user wants different style → They must specify explicitly\n\n────────────────────────────────────────────────────────────────\nEXAMPLES OF CORRECT DETECTION:\n────────────────────────────────────────────────────────────────\n\nINPUT: \"generate image of golden retriever\"\nDETECTION:\n- No style keywords → Continue\n- Not a cartoon character → Continue  \n- \"golden retriever\" = real dog breed → PHOTOREALISTIC\nSTYLE: Photorealistic ✅\n\nINPUT: \"generate cartoon image of golden retriever\"\nDETECTION:\n- \"cartoon\" keyword found → CARTOON\nSTYLE: Cartoon ✅\n\nINPUT: \"generate image of Scooby-Doo\"\nDETECTION:\n- No style keywords → Continue\n- \"Scooby-Doo\" = cartoon character → CARTOON\nSTYLE: Cartoon ✅\n\nINPUT: \"generate image of redbone coonhound\"\nDETECTION:\n- No style keywords → Continue\n- Not a cartoon character → Continue\n- \"redbone coonhound\" = real dog breed → PHOTOREALISTIC\nSTYLE: Photorealistic ✅\n\nINPUT: \"generate image of kingfisher diving\"\nDETECTION:\n- No style keywords → Continue\n- Not a cartoon character → Continue\n- \"kingfisher\" = real bird → PHOTOREALISTIC\nSTYLE: Photorealistic ✅\n\nINPUT: \"generate anime style cat\"\nDETECTION:\n- \"anime style\" keyword found → ANIME\nSTYLE: Anime ✅\n\n═══════════════════════════════════════════════════════════════\nSTYLE FORMULAS\n═══════════════════════════════════════════════════════════════\n\n────────────────────────────────────────────────────────────────\nPHOTOREALISTIC (DEFAULT FOR REAL SUBJECTS)\n────────────────────────────────────────────────────────────────\n\nPOSITIVE TEMPLATE:\nprofessional photography of [SUBJECT], [LIGHTING], [COMPOSITION], realistic, natural, detailed, sharp focus\n\nCOMPONENTS:\n- Photography type: \"professional photography\", \"wildlife photography\", \"portrait photography\", \"landscape photography\"\n- Lighting: \"natural lighting\", \"golden hour\", \"soft lighting\", \"dramatic lighting\"\n- Technical: \"shallow depth of field\", \"bokeh\", \"sharp focus\", \"detailed\"\n- Quality: \"professional\", \"detailed\", \"8k\" (use sparingly)\n\nNEGATIVE (Minimal):\nblurry, low quality, cartoon, anime, illustration, painting, distorted\n\nEXAMPLE:\n{\n  \"positive\": \"professional wildlife photography of golden retriever outdoors, natural lighting, realistic fur texture, detailed, shallow depth of field, sharp focus\",\n  \"negative\": \"blurry, low quality, cartoon, anime, illustration, distorted\"\n}\n\n────────────────────────────────────────────────────────────────\nCARTOON/ANIMATED\n────────────────────────────────────────────────────────────────\n\nPOSITIVE TEMPLATE:\ncartoon style illustration of [SUBJECT], vibrant colors, bold outlines, animated style, clean lines, [CHARACTER DETAILS]\n\nCOMPONENTS:\n- Style markers: \"cartoon style illustration\", \"animated style\", \"cel shaded\"\n- Visual qualities: \"vibrant colors\", \"bold outlines\", \"clean lines\"\n- Character details: specific colors, clothing, expressions\n\nNEGATIVE (Minimal):\nblurry, low quality, photorealistic, photograph, 3d render, messy, distorted\n\nEXAMPLE:\n{\n  \"positive\": \"cartoon style illustration of happy golden retriever, vibrant colors, bold outlines, animated style, friendly expression, clean lines, bright and cheerful\",\n  \"negative\": \"blurry, low quality, photorealistic, photograph, 3d render, distorted\"\n}\n\n────────────────────────────────────────────────────────────────\nANIME\n────────────────────────────────────────────────────────────────\n\nPOSITIVE TEMPLATE:\nanime style illustration of [SUBJECT], detailed anime art, cel shaded, clean linework, [ANIME CHARACTERISTICS]\n\nCOMPONENTS:\n- Style markers: \"anime style illustration\", \"anime aesthetic\"\n- Technical: \"cel shaded\", \"clean linework\", \"detailed shading\"\n- Characteristics: \"large expressive eyes\" (for characters), \"vibrant colors\"\n\nNEGATIVE (Minimal):\nblurry, low quality, photorealistic, photograph, western cartoon, distorted anatomy\n\nEXAMPLE:\n{\n  \"positive\": \"anime style illustration of cat, detailed anime art, cel shaded, clean linework, large expressive eyes, vibrant colors, cute aesthetic\",\n  \"negative\": \"blurry, low quality, photorealistic, photograph, distorted anatomy\"\n}\n\n────────────────────────────────────────────────────────────────\nPAINTING/ARTISTIC\n────────────────────────────────────────────────────────────────\n\nPOSITIVE TEMPLATE:\n[PAINTING TYPE] of [SUBJECT], visible brush strokes, painterly technique, artistic, [COLOR MOOD]\n\nCOMPONENTS:\n- Painting type: \"oil painting\", \"watercolor\", \"acrylic painting\"\n- Technique: \"visible brush strokes\", \"painterly technique\", \"textured canvas\"\n- Mood: \"rich colors\", \"expressive\", \"dramatic\"\n\nNEGATIVE (Minimal):\nblurry, low quality, photograph, digital art, cartoon, flat colors\n\nEXAMPLE:\n{\n  \"positive\": \"oil painting of landscape with mountains, visible brush strokes, painterly technique, rich colors, dramatic lighting, expressive\",\n  \"negative\": \"blurry, low quality, photograph, digital art, cartoon, flat colors\"\n}\n\n────────────────────────────────────────────────────────────────\n3D/CGI\n────────────────────────────────────────────────────────────────\n\nPOSITIVE TEMPLATE:\n3d render of [SUBJECT], detailed 3d model, [RENDER ENGINE], realistic materials, professional lighting\n\nCOMPONENTS:\n- Render markers: \"3d render\", \"octane render\", \"unreal engine\"\n- Technical: \"detailed 3d model\", \"realistic materials\", \"ray tracing\"\n- Quality: \"professional lighting\", \"sharp focus\"\n\nNEGATIVE (Minimal):\nblurry, low quality, flat, 2d, cartoon, low poly, amateur\n\nEXAMPLE:\n{\n  \"positive\": \"3d render of futuristic building, unreal engine, detailed 3d model, realistic materials, ray tracing, professional lighting, sharp focus\",\n  \"negative\": \"blurry, low quality, flat, 2d, cartoon, low poly\"\n}\n\n═══════════════════════════════════════════════════════════════\nQUALITY KEYWORDS (Use Based on User Request)\n═══════════════════════════════════════════════════════════════\n\nSTANDARD (default):\n- \"professional, detailed, sharp focus\"\n\nHIGH QUALITY (if user says \"high quality\", \"detailed\", \"best\"):\n- \"professional, highly detailed, sharp focus, 8k\"\n\nULTRA (if user says \"ultra\", \"extreme\", \"maximum quality\"):\n- \"masterpiece, professional, highly detailed, sharp focus, 8k, ultra realistic\"\n\nQUICK (if user says \"quick\", \"draft\", \"fast\"):\n- \"good quality, clean\"\n\n═══════════════════════════════════════════════════════════════\nCOMPOSITION & LIGHTING KEYWORDS\n═══════════════════════════════════════════════════════════════\n\nAdd these based on subject and context:\n\nPORTRAITS:\n- \"portrait composition, eye level, centered\"\n- \"shallow depth of field, bokeh background\"\n- \"detailed facial features\"\n\nLANDSCAPES:\n- \"wide angle, panoramic view\"\n- \"depth of field, atmospheric perspective\"\n\nACTION/MOTION:\n- \"high shutter speed, frozen motion\"\n- \"dynamic composition\"\n\nLIGHTING (detect from context):\n- Sunset/sunrise → \"golden hour lighting, warm tones\"\n- Night → \"dramatic night lighting, ambient glow\"\n- Indoor → \"natural window light, soft shadows\"\n- Studio → \"professional studio lighting, soft box\"\n\n═══════════════════════════════════════════════════════════════\nCRITICAL RULES\n═══════════════════════════════════════════════════════════════\n\n1. ALWAYS apply style detection in order: Explicit keywords → Fictional characters → Default to photorealistic\n\n2. NEVER use cartoon/anime style for real animals/people unless user explicitly requests it\n\n3. Be SPECIFIC about subject details (colors, features, expressions)\n\n4. Keep prompts CONCISE (70-100 tokens positive, 15-25 tokens negative)\n\n5. Quality keywords should match user's request level (don't add \"masterpiece, 8k\" to every prompt)\n\n6. Composition and lighting keywords should be RELEVANT to the subject\n\n7. Negative prompts should BLOCK THE WRONG STYLES (not create a massive blacklist)\n\n8. DO NOT ADD ANY BACKGROUND ELEMENTS unless specifically requested by the user\n\n9. DO NOT invent scenes, settings, or environments not mentioned in the request\n\n10. ONLY describe what the user explicitly asked for\n\n═══════════════════════════════════════════════════════════════\nOUTPUT FORMAT\n═══════════════════════════════════════════════════════════════\n\nReturn ONLY valid JSON, no other text:\n\n{\n  \"positive\": \"concise specific prompt with style, subject details, technical specs, appropriate quality keywords\",\n  \"negative\": \"minimal focused negative prompt blocking wrong styles and common issues\"\n}\n\nTarget token counts:\n- Positive: 60-90 tokens\n- Negative: 15-25 tokens\n- Total: ~100 tokens or less\n\n═══════════════════════════════════════════════════════════════\nEND OF INSTRUCTIONS\n═══════════════════════════════════════════════════════════════"
+        "text": "=You are an expert Stable Diffusion prompt engineer.\n\nUser request: {{ $json.chatInput }}\n\nIMPORTANT: Along with your JSON response, you must preserve the original user request.\nThe original request will be needed later in the workflow.\n\nCRITICAL RULES:\n1. For photorealistic: DO NOT add \"colorful background\", \"vibrant colors\", \"studio photography\", or \"geometric patterns\"\n2. Keep it NATURAL - describe only the subject with natural lighting\n3. For cartoon: use \"cartoon style illustration\", vibrant colors, bold outlines\n4. For logos: use \"professional logo design featuring letters [LETTERS]\"\n\nSTYLE DETECTION:\n- If contains \"cartoon\" or \"anime\" → CARTOON style\n- If contains \"logo\" or is 2-5 letters → LOGO style  \n- Otherwise → PHOTOREALISTIC (default)\n\nPHOTOREALISTIC TEMPLATE:\n[SUBJECT], natural lighting, realistic, detailed, sharp focus\n\nCARTOON TEMPLATE:\ncartoon style illustration of [SUBJECT], vibrant colors, bold outlines, animated style\n\nReturn ONLY valid JSON:\n{\n  \"positive\": \"prompt here\",\n  \"negative\": \"blurry, low quality, cartoon, anime, illustration, distorted\"\n}"
       },
-      "id": "83b7dd4b-b2b3-4cca-8ce1-5bc5dce63ff1",
+      "id": "c9e643fa-1748-4894-8be6-992d9e414f8c",
       "name": "AI Engineer",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.5,
       "position": [
-        14656,
-        1024
+        96,
+        160
       ]
     },
     {
@@ -53,13 +174,13 @@
         "model": "qwen2.5:latest",
         "options": {}
       },
-      "id": "12c303cb-0eb2-4875-86e3-c4e796c999b7",
-      "name": "Ollama",
+      "id": "aa2df7be-ac10-4d63-ad80-b2a1688cc65a",
+      "name": "Ollama Engineer",
       "type": "@n8n/n8n-nodes-langchain.lmOllama",
       "typeVersion": 1,
       "position": [
-        14656,
-        1216
+        176,
+        352
       ],
       "credentials": {
         "ollamaApi": {
@@ -70,28 +191,28 @@
     },
     {
       "parameters": {
-        "jsCode": "let p;\ntry {\n  p = JSON.parse($input.item.json.text.replace(/```json|```/g, '').trim());\n} catch(e) {\n  p = {positive: 'beautiful image, highly detailed', negative: 'blurry, low quality'};\n}\nreturn [{json: p}];"
+        "jsCode": "// Get AI response from current input\nconst aiResponse = $input.item.json.text || $input.item.json.response || '';\n\n// Get original input from \"Save Original Input\" node by name\nlet originalInput = '';\ntry {\n  const saveNode = $('Save Original Input');\n  if (saveNode && saveNode.first()) {\n    const savedData = saveNode.first().json;\n    originalInput = savedData.originalChatInput || savedData.chatInput || '';\n    console.log('✅ Got from Save Original Input:', originalInput.substring(0, 80));\n  }\n} catch(e) {\n  console.log('❌ Could not access Save Original Input node:', e.message);\n}\n\nconsole.log('📝 Parse Prompts:');\nconsole.log('- Original input:', originalInput || 'NOT FOUND ❌');\n\n// Parse JSON\nlet prompts;\ntry {\n  const jsonText = aiResponse.replace(/```json|```/g, '').trim();\n  prompts = JSON.parse(jsonText);\n  console.log('✅ Parsed JSON');\n} catch(e) {\n  prompts = { positive: 'beautiful image', negative: 'blurry, low quality' };\n}\n\nreturn [{\n  json: {\n    positive: prompts.positive || 'beautiful image',\n    negative: prompts.negative || 'blurry, low quality',\n    chatInput: originalInput\n  }\n}];"
       },
-      "id": "682ecc8e-fb87-4f3e-9ec6-a7e5473b9bd0",
-      "name": "Parse",
+      "id": "d96d8678-c687-4722-87a3-2ff342d6ee99",
+      "name": "Parse Prompts",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        14864,
-        1024
+        432,
+        144
       ]
     },
     {
       "parameters": {
-        "jsCode": "// ULTIMATE PHOTOREALISTIC BUILD - v7\nconst positive = $input.item.json.positive || 'RAW photo, professional photography, highly detailed';\nconst negative = $input.item.json.negative || 'blurry, low quality, distorted, cartoon, anime, CGI';\nconst userRequest = $('Chat Trigger').item.json.chatInput.toLowerCase();\n\n// QUALITY PRESETS - Optimized for photorealism\nconst qualityPresets = {\n  'draft': { steps: 20, cfg: 6.5, sampler: 'dpm_2', scheduler: 'karras' },\n  'normal': { steps: 35, cfg: 6.5, sampler: 'dpm_2', scheduler: 'karras' },\n  'high': { steps: 50, cfg: 6.5, sampler: 'dpm_2', scheduler: 'karras' },\n  'ultra': { steps: 70, cfg: 7.0, sampler: 'dpm_2', scheduler: 'karras' },\n  'extreme': { steps: 100, cfg: 7.0, sampler: 'dpm_2', scheduler: 'karras' }\n};\n\nconst aspectRatios = {\n  'square': { width: 512, height: 512, desc: 'Square 512x512' },\n  'portrait': { width: 512, height: 768, desc: 'Portrait 512x768' },\n  'landscape': { width: 768, height: 512, desc: 'Landscape 768x512' },\n  'tall': { width: 512, height: 1024, desc: 'Tall Portrait 512x1024' },\n  'wide': { width: 1024, height: 512, desc: 'Wide Landscape 1024x512' },\n  '1024': { width: 1024, height: 1024, desc: '1024x1024' },\n  '768': { width: 768, height: 768, desc: '768x768' },\n  'hd': { width: 1280, height: 720, desc: 'HD 1280x720' },\n  'phone': { width: 480, height: 853, desc: 'Phone 480x853' },\n  '4k': { width: 2048, height: 2048, desc: '4K 2048x2048' }\n};\n\nconst models = {\n  'default': 'dreamshaper_8.safetensors',\n  'v15': 'v1-5-pruned-emaonly-fp16.safetensors',\n  'inpainting': '512-inpainting-ema.safetensors'\n};\n\nlet quality = qualityPresets['high'];\nlet dimensions = aspectRatios['square'];\nlet model = models['default'];\n\n// Auto-detect quality\nif (userRequest.includes('draft') || userRequest.includes('quick')) quality = qualityPresets['draft'];\nelse if (userRequest.includes('ultra') || userRequest.includes('best')) quality = qualityPresets['ultra'];\nelse if (userRequest.includes('extreme') || userRequest.includes('maximum')) quality = qualityPresets['extreme'];\nelse if (userRequest.includes('normal') || userRequest.includes('standard')) quality = qualityPresets['normal'];\nelse if (userRequest.includes('high') || userRequest.includes('detailed')) quality = qualityPresets['high'];\n\n// Auto-detect dimensions\nif (userRequest.includes('4k')) dimensions = aspectRatios['4k'];\nelse if (userRequest.includes('1024')) dimensions = aspectRatios['1024'];\nelse if (userRequest.includes('768')) dimensions = aspectRatios['768'];\nelse if (userRequest.includes('hd')) dimensions = aspectRatios['hd'];\nelse if (userRequest.includes('phone')) dimensions = aspectRatios['phone'];\nelse if (userRequest.includes('tall')) dimensions = aspectRatios['tall'];\nelse if (userRequest.includes('wide')) dimensions = aspectRatios['wide'];\nelse if (userRequest.includes('portrait')) dimensions = aspectRatios['portrait'];\nelse if (userRequest.includes('landscape')) dimensions = aspectRatios['landscape'];\nelse if (userRequest.includes('square')) dimensions = aspectRatios['square'];\n\n// Auto-detect model\nif (userRequest.includes('v15') || userRequest.includes('v1-5')) model = models['v15'];\nelse if (userRequest.includes('inpaint')) model = models['inpainting'];\n\n// ADVANCED PHOTOREALISM ENHANCEMENT\nlet enhancedPositive = positive;\nlet enhancedNegative = negative;\n\n// Detect style intent\nconst isCartoon = userRequest.includes('cartoon') || userRequest.includes('anime') || \n                  positive.includes('cartoon') || positive.includes('anime');\nconst isArtistic = userRequest.includes('painting') || userRequest.includes('watercolor') ||\n                   userRequest.includes('oil painting') || positive.includes('painting');\nconst is3D = userRequest.includes('3d render') || userRequest.includes('cgi');\n\n// DEFAULT: PROFESSIONAL PHOTOREALISM\nif (!isCartoon && !isArtistic && !is3D) {\n  if (!positive.includes('RAW photo') && !positive.includes('professional photography')) {\n    enhancedPositive = `RAW photo, ${positive}`;\n  }\n  \n  let additions = [];\n  if (!positive.includes('natural') && !positive.includes('realistic light')) {\n    additions.push('natural lighting');\n  }\n  if (!positive.includes('8k') && !positive.includes('high resolution')) {\n    additions.push('8k resolution');\n  }\n  if (!positive.includes('sharp focus')) {\n    additions.push('sharp focus');\n  }\n  \n  if (additions.length > 0) {\n    enhancedPositive = `${enhancedPositive}, ${additions.join(', ')}`;\n  }\n  \n  enhancedNegative = `${negative}, cartoon, anime, illustration, drawing, sketch, painting, cel shaded, CGI, 3D render, video game graphics, oversaturated, neon colors, artificial colors, unrealistic, stylized, plastic, toy-like`;\n  \n  quality.cfg = Math.min(quality.cfg, 6.5);\n  quality.sampler = 'dpm_2';\n  quality.scheduler = 'karras';\n}\n\nif (isCartoon) {\n  quality.cfg = 11.0;\n  quality.sampler = 'euler';\n  enhancedPositive = positive;\n  enhancedNegative = negative;\n}\n\nif (isArtistic) {\n  quality.cfg = 8.5;\n  quality.sampler = 'euler_ancestral';\n  enhancedPositive = positive;\n  enhancedNegative = negative;\n}\n\nif (is3D) {\n  quality.cfg = 8.0;\n  quality.sampler = 'dpm_2';\n  enhancedPositive = positive;\n  enhancedNegative = `${negative}, photorealistic, realistic, natural`;\n}\n\nconst seed = Math.floor(Math.random() * 999999);\n\nlet waitTime = 8;\nif (quality.steps <= 25) waitTime = 10;\nelse if (quality.steps <= 40) waitTime = 18;\nelse if (quality.steps <= 55) waitTime = 28;\nelse if (quality.steps <= 75) waitTime = 38;\nelse waitTime = 55;\n\nconst totalPixels = dimensions.width * dimensions.height;\nif (totalPixels >= 2097152) waitTime += 30;\nelse if (totalPixels >= 1048576) waitTime += 18;\nelse if (totalPixels >= 589824) waitTime += 10;\n\nconst workflow = {\n  prompt: {\n    \"3\": { inputs: { seed, steps: quality.steps, cfg: quality.cfg, sampler_name: quality.sampler, scheduler: quality.scheduler, denoise: 1.0, model: [\"4\",0], positive:[\"6\",0], negative:[\"7\",0], latent_image:[\"5\",0] }, class_type: \"KSampler\" },\n    \"4\": { inputs: { ckpt_name: model }, class_type: \"CheckpointLoaderSimple\" },\n    \"5\": { inputs: { width: dimensions.width, height: dimensions.height, batch_size: 1 }, class_type: \"EmptyLatentImage\" },\n    \"6\": { inputs: { text: enhancedPositive, clip: [\"4\",1] }, class_type: \"CLIPTextEncode\" },\n    \"7\": { inputs: { text: enhancedNegative, clip: [\"4\",1] }, class_type: \"CLIPTextEncode\" },\n    \"8\": { inputs: { samples: [\"3\",0], vae:[\"4\",2] }, class_type: \"VAEDecode\" },\n    \"9\": { inputs: { filename_prefix: \"ai_generated\", images:[\"8\",0] }, class_type: \"SaveImage\" }\n  },\n  client_id: \"n8n\",\n  metadata: { seed, dimensions: dimensions.desc, steps: quality.steps, cfg: quality.cfg, sampler: quality.sampler, scheduler: quality.scheduler, model, waitTime }\n};\n\nreturn [{json: workflow}];"
+        "jsCode": "// ===== GET ORIGINAL USER INPUT (BEFORE AI PROCESSING) =====\nconst comfyModels = $input.item.json;\nlet originalUserInput = '';\n\n// Search through all inputs to find the original chatInput (handle _1 suffix from Merge)\nconst allInputs = $input.all();\nfor (const input of allInputs) {\n  // Check for chatInput with or without _1 suffix\n  const chatInput = input.json.chatInput || input.json.chatInput_1 || input.json.chatInput_2;\n  if (chatInput && chatInput.length > 0) {\n    originalUserInput = chatInput.trim();\n    console.log('✅ Found chatInput:', originalUserInput.substring(0, 80));\n    break;\n  }\n}\n\nconsole.log('🔍 Original user input:', originalUserInput || 'NOT FOUND');\n\n// ===== PARSED DATA =====\nconst allCheckpoints = $input.all()\n  .filter(item => item.json.checkpoints || item.json.checkpoints_2)\n  .flatMap(item => item.json.checkpoints || item.json.checkpoints_2);\n\nconst allVaes = $input.all()\n  .filter(item => item.json.vae || item.json.vae_2)\n  .flatMap(item => item.json.vae || item.json.vae_2);\n\nconst allLoras = $input.all()\n  .filter(item => item.json.loras || item.json.loras_2)\n  .flatMap(item => item.json.loras || item.json.loras_2);\n\n// ===== AUTO-DETECT MODELS (FILTER OUT INPAINTING) =====\nconst sdxlModels = allCheckpoints\n  .filter(m => m.toLowerCase().includes('xl'))\n  .filter(m => !m.toLowerCase().includes('inpaint'));\n\nconst sd15Models = allCheckpoints\n  .filter(m => !m.toLowerCase().includes('xl'))\n  .filter(m => !m.toLowerCase().includes('inpaint'));\n\nconst fluxModels = allCheckpoints.filter(m => m.toLowerCase().includes('flux'));\n\n// ===== VAES =====\nconst sd15Vae = allVaes.find(v => v.toLowerCase().includes('ae')) || 'ae.safetensors';\nconst animeVae = allVaes.find(v => v.toLowerCase().includes('wan')) || sd15Vae;\nconst sdxlVae = allVaes.find(v => v.toLowerCase().includes('hyper')) || null;\n\n// ===== FALLBACKS =====\nif (!sd15Models.length) sd15Models.push('dreamshaper_8.safetensors');\nif (!sdxlModels.length) sdxlModels.push('sd_xl_base_1.0.safetensors');\n\nconsole.log('📦 Available models:');\nconsole.log('- SD1.5:', sd15Models.slice(0, 3).join(', '));\nconsole.log('- SDXL:', sdxlModels.slice(0, 3).join(', '));\n\n// ===== GET PROMPTS (HANDLE _1 SUFFIX FROM MERGE) =====\nlet positive = '';\nlet negative = '';\n\n// Handle both clean and _1 suffixed field names\nconst positiveField = $input.item.json.positive || $input.item.json.positive_1 || '';\nconst negativeField = $input.item.json.negative || $input.item.json.negative_1 || '';\n\nif (positiveField && positiveField !== 'empty') {\n  positive = positiveField;\n  negative = negativeField || 'blurry, low quality, distorted';\n  console.log('✅ Using engineered prompts from AI Engineer');\n} else if (originalUserInput && originalUserInput.length > 5) {\n  positive = originalUserInput.replace(/^generate\\s+image:\\s*/i, '').trim();\n  negative = 'blurry, low quality, distorted, ugly, bad anatomy';\n  console.log('✅ Using original user input as prompt');\n} else {\n  positive = 'beautiful detailed image, high quality, professional';\n  negative = 'blurry, low quality, distorted';\n  console.log('⚠️ Using fallback prompt');\n}\n\n// Safety check\nif (!positive || positive === 'empty' || positive.length < 3) {\n  positive = 'beautiful detailed image, high quality';\n}\n\nconsole.log('📝 Prompts:');\nconsole.log('- Positive:', positive.substring(0, 80));\nconsole.log('- Negative:', negative.substring(0, 50));\n\n// ===== DEFAULT SETTINGS =====\nlet quality = { steps: 50, cfg: 6.5, sampler: 'dpm_2', scheduler: 'karras' };\nlet dimensions = { width: 512, height: 512, desc: '512x512' };\nlet model = sd15Models[0];\nlet modelType = 'SD1.5';\nlet selectedVae = sd15Vae;\n\n// ===== STYLE DETECTION (USE ORIGINAL INPUT!) =====\nconst lowerOriginal = originalUserInput.toLowerCase();\nconst isCartoon = lowerOriginal.includes('cartoon') || lowerOriginal.includes('anime');\nconst isLogo = lowerOriginal.includes('logo');\nconst isFluxLogo = isLogo && lowerOriginal.includes('flux');\n\n// ===== DIMENSIONS OVERRIDE (CHECK ORIGINAL INPUT!) =====\nif (lowerOriginal.includes('1024')) {\n  dimensions = { width: 1024, height: 1024, desc: '1024x1024' };\n  model = sdxlModels[0];\n  modelType = 'SDXL';\n  quality.steps = 30;\n  quality.cfg = 6.0;\n  console.log('✅ 1024x1024 detected → Using SDXL:', model);\n}\nif (lowerOriginal.includes('2048')) {\n  dimensions = { width: 2048, height: 2048, desc: '2048x2048' };\n  model = sdxlModels[0];\n  modelType = 'SDXL';\n  quality.steps = 40;\n  quality.cfg = 5.5;\n  console.log('✅ 2048x2048 detected → Using SDXL');\n}\nif (lowerOriginal.includes('portrait') && !lowerOriginal.includes('1024')) {\n  dimensions = { width: 512, height: 768, desc: 'Portrait 512x768' };\n  console.log('✅ Portrait orientation');\n}\nif (lowerOriginal.includes('landscape') && !lowerOriginal.includes('1024')) {\n  dimensions = { width: 768, height: 512, desc: 'Landscape 768x512' };\n  console.log('✅ Landscape orientation');\n}\n\n// ===== MODEL SELECTION =====\nif (isFluxLogo && fluxModels.length > 0) {\n  model = fluxModels[0];\n  modelType = 'Flux';\n  console.log('✅ Flux logo mode');\n} else if (isCartoon) {\n  model = sd15Models[0];\n  selectedVae = animeVae;\n  quality.cfg = 11.0;\n  console.log('✅ Cartoon/Anime mode');\n} else if ((lowerOriginal.includes('photo') || lowerOriginal.includes('realistic')) && modelType !== 'SDXL') {\n  // Use Realistic Vision for 512x512 photorealistic\n  const realisticModel = sd15Models.find(m => m.includes('realisticVision'));\n  if (realisticModel) {\n    model = realisticModel;\n    quality.cfg = 7.0;\n    quality.steps = 35;\n    console.log('✅ Using Realistic Vision for photorealism');\n  }\n}\n\n// Quick/Fast mode\nif (lowerOriginal.includes('quick') || lowerOriginal.includes('fast')) {\n  const lightningModel = sdxlModels.find(m => m.toLowerCase().includes('lightning'));\n  if (lightningModel) {\n    model = lightningModel;\n    modelType = 'SDXL';\n    quality.steps = 8;\n    quality.cfg = 2.0;\n    quality.sampler = 'dpmpp_sde';\n    dimensions = { width: 1024, height: 1024, desc: '1024x1024 (Quick)' };\n    console.log('⚡ Quick mode → Using Lightning:', model);\n  }\n}\n\n// Safety check\nif (!model || model.toLowerCase().includes('inpaint')) {\n  model = 'dreamshaper_8.safetensors';\n  console.log('⚠️ Model fallback to DreamShaper');\n}\n\nconsole.log('🎨 Final config:');\nconsole.log('- Model:', model);\nconsole.log('- Type:', modelType);\nconsole.log('- Dimensions:', dimensions.desc);\nconsole.log('- Steps:', quality.steps);\nconsole.log('- CFG:', quality.cfg);\n\n// ===== SEED =====\nconst seed = Math.floor(Math.random() * 999999);\n\n// ===== BUILD WORKFLOW =====\nconst workflow = {\n  prompt: {\n    \"4\": { inputs: { ckpt_name: model }, class_type: \"CheckpointLoaderSimple\" },\n    \"5\": { inputs: { width: dimensions.width, height: dimensions.height, batch_size: 1 }, class_type: \"EmptyLatentImage\" },\n    \"6\": { inputs: { text: positive, clip: [\"4\", 1] }, class_type: \"CLIPTextEncode\" },\n    \"7\": { inputs: { text: negative, clip: [\"4\", 1] }, class_type: \"CLIPTextEncode\" },\n    \"3\": { inputs: { seed, steps: quality.steps, cfg: quality.cfg, sampler_name: quality.sampler, scheduler: quality.scheduler, positive: [\"6\", 0], negative: [\"7\", 0], latent_image: [\"5\", 0], model: [\"4\", 0], denoise: 1.0 }, class_type: \"KSampler\" },\n    \"8\": { inputs: { samples: [\"3\", 0], vae: [\"4\", 2] }, class_type: \"VAEDecode\" },\n    \"9\": { inputs: { filename_prefix: \"ai_generated_\", images: [\"8\", 0] }, class_type: \"SaveImage\" }\n  },\n  client_id: \"n8n\",\n  metadata: { \n    seed, \n    dimensions: dimensions.desc, \n    steps: quality.steps, \n    cfg: quality.cfg, \n    sampler: quality.sampler, \n    scheduler: quality.scheduler, \n    model, \n    model_type: modelType, \n    vae: selectedVae, \n    style: isCartoon ? 'cartoon' : (isLogo ? 'logo' : 'photorealistic'),\n    positive_preview: positive.substring(0, 100),\n    negative_preview: negative.substring(0, 50),\n    original_request: originalUserInput.substring(0, 100)\n  }\n};\n\n// ===== LORAS (FOR LOGOS) =====\nconst selectedLoras = [];\nif (isLogo) {\n  const logoLoras = allLoras.filter(l => \n    l.includes('Harrlogos') || \n    l.includes('texta') || \n    l.includes('LogoRedmond')\n  );\n  \n  if (logoLoras.length > 0) {\n    selectedLoras.push({ \n      name: logoLoras[0], \n      strength_model: 0.75, \n      strength_clip: 0.0 \n    });\n    console.log('✅ Added logo LoRA:', logoLoras[0]);\n  }\n}\n\nif (selectedLoras.length > 0) {\n  let lastModelRef = [\"4\", 0];\n  let nodeId = 10;\n  \n  selectedLoras.forEach(l => {\n    const id = String(nodeId);\n    workflow.prompt[id] = {\n      class_type: \"LoraLoader\",\n      inputs: { \n        lora_name: l.name, \n        strength_model: l.strength_model, \n        strength_clip: l.strength_clip, \n        strength_alpha: 1.0, \n        model: lastModelRef, \n        clip: [\"4\", 1] \n      }\n    };\n    lastModelRef = [id, 0];\n    nodeId++;\n  });\n  \n  workflow.prompt[\"3\"].inputs.model = lastModelRef;\n}\n\nreturn [{ json: workflow }];"
       },
-      "id": "f7a25f7e-0081-4279-a1ff-c1cd09451b08",
-      "name": "Build Enhanced",
+      "id": "c8ba7a34-4e25-48fe-90e4-c80e53f79f1b",
+      "name": "Build ComfyUI Workflow",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        15056,
-        1024
+        1280,
+        -32
       ]
     },
     {
@@ -104,13 +225,13 @@
         "body": "={{ JSON.stringify($json) }}",
         "options": {}
       },
-      "id": "8ef79718-136b-4b4b-b90c-ebaf4b4a54a9",
-      "name": "POST",
+      "id": "1b6d1e55-66f4-41d3-9f89-4fa479298458",
+      "name": "POST to ComfyUI",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        15264,
-        1024
+        768,
+        208
       ]
     },
     {
@@ -127,38 +248,31 @@
               "id": "2",
               "name": "metadata",
               "type": "object",
-              "value": "={{ $('Build Enhanced').item.json.metadata }}"
+              "value": "={{ $('Build ComfyUI Workflow').item.json.metadata }}"
             },
             {
               "id": "3",
-              "name": "waitTime",
+              "name": "startTime",
               "type": "number",
-              "value": "={{ $('Build Enhanced').item.json.metadata.waitTime }}"
+              "value": "={{ Date.now() }}"
+            },
+            {
+              "id": "4",
+              "name": "attempt",
+              "type": "number",
+              "value": "=0"
             }
           ]
         },
         "options": {}
       },
-      "id": "6054c4d9-d1dd-4ebf-bb01-d8b752d958b0",
-      "name": "Store",
+      "id": "ac84aa6a-07e4-426c-8171-3b711aa3d09c",
+      "name": "Store Polling Data",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        15456,
-        1024
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const waitTime = $input.item.json.waitTime || 25;\nawait new Promise(resolve => setTimeout(resolve, waitTime*1000));\nreturn [$input.item];"
-      },
-      "id": "777f603f-9427-41a6-8826-07585d4730f0",
-      "name": "Dynamic Wait",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        15664,
-        1024
+        976,
+        208
       ]
     },
     {
@@ -166,26 +280,133 @@
         "url": "=http://host.docker.internal:8188/history/{{ $json.promptId }}",
         "options": {}
       },
-      "id": "27275f7a-a9c7-4ebc-936f-fcf9e67c7a65",
-      "name": "Check",
+      "id": "6c5abd1f-02e7-418e-a014-c68a40817875",
+      "name": "Check History",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        15856,
-        1024
+        1168,
+        208
       ]
     },
     {
       "parameters": {
-        "jsCode": "const pid = $('Store').item.json.promptId;\nconst h = $input.item.json;\nif(h[pid] && h[pid].outputs && h[pid].outputs['9']){\n  const img = h[pid].outputs['9'].images[0];\n  return [{json:{filename:img.filename, subfolder:img.subfolder||'', type:img.type}}];\n}\nthrow new Error('Not ready');"
+        "jsCode": "const promptId = $('Store Polling Data').item.json.promptId;\nconst attempt = $('Store Polling Data').item.json.attempt;\nconst startTime = $('Store Polling Data').item.json.startTime;\nconst metadata = $('Store Polling Data').item.json.metadata;\nconst historyData = $input.item.json;\n\nif (historyData[promptId]?.outputs?.['9']) {\n  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);\n  console.log(`✅ Complete! Time: ${elapsed}s, Checks: ${attempt + 1}`);\n  return [{ json: { status: 'completed', promptId, outputs: historyData[promptId].outputs['9'], totalTime: parseFloat(elapsed), attempts: attempt + 1, metadata } }];\n}\n\nconst elapsed = ((Date.now() - startTime) / 1000).toFixed(1);\nconsole.log(`[${elapsed}s] Check ${attempt + 1}: 🎨 Processing...`);\nreturn [{ json: { status: 'pending', promptId, attempt: attempt + 1, startTime, metadata } }];"
       },
-      "id": "43136b9e-6288-42ed-acb5-64adf2fec4cd",
-      "name": "Extract",
+      "id": "76df4ead-b2e6-46e0-a953-99a247ee6eeb",
+      "name": "Parse Status",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        16064,
-        1024
+        1376,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "c2",
+              "leftValue": "={{ $json.attempt }}",
+              "rightValue": 150,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "841107cc-b55f-4549-b68e-067fb7062f38",
+      "name": "Is Complete?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1568,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "id": "f08767a6-cdc8-4f00-8457-6d8091bce93c",
+      "name": "Wait 2s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1424,
+        432
+      ],
+      "webhookId": "wait-webhook-id"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "promptId",
+              "type": "string",
+              "value": "={{ $json.promptId }}"
+            },
+            {
+              "id": "2",
+              "name": "attempt",
+              "type": "number",
+              "value": "={{ $json.attempt }}"
+            },
+            {
+              "id": "3",
+              "name": "startTime",
+              "type": "number",
+              "value": "={{ $json.startTime }}"
+            },
+            {
+              "id": "4",
+              "name": "metadata",
+              "type": "object",
+              "value": "={{ $json.metadata }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d7c971e4-f1b3-49bc-a785-23ffcf128607",
+      "name": "Loop Back",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1776,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const status = $input.item.json.status;\nconst outputs = $input.item.json.outputs;\nconst attempt = $input.item.json.attempt;\n\nif (status === 'completed' && outputs?.images?.[0]) {\n  const img = outputs.images[0];\n  return [{ json: { filename: img.filename, subfolder: img.subfolder || '', type: img.type, metadata: $input.item.json.metadata } }];\n}\n\nthrow new Error(`Generation timed out after ${attempt} attempts (${attempt * 2} seconds)`);"
+      },
+      "id": "798ed807-5292-4e4a-90a3-8d749c4ad28d",
+      "name": "Extract Image Info",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1776,
+        208
       ]
     },
     {
@@ -199,51 +420,40 @@
           }
         }
       },
-      "id": "38e75d69-dfc3-4a1f-ab14-0d2b70500090",
+      "id": "c4d656e3-0d96-48bc-9587-5df247782feb",
       "name": "Download Image",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        16256,
-        1024
+        1968,
+        208
       ]
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "1",
-              "name": "text",
-              "type": "string",
-              "value": "=✨ **Image Generated!**\n\n**Filename:** {{ $('Extract').item.json.filename }}\n\n**Settings:**\n• Size: {{ $('Store').item.json.metadata.dimensions }}\n• Steps: {{ $('Store').item.json.metadata.steps }}\n• CFG: {{ $('Store').item.json.metadata.cfg }}\n• Sampler: {{ $('Store').item.json.metadata.sampler }} ({{ $('Store').item.json.metadata.scheduler }})\n• Model: {{ $('Store').item.json.metadata.model }}\n• Seed: {{ $('Store').item.json.metadata.seed }}\n\n**Location:**\nD:\\Docker\\ComfyUI_windows_portable\\ComfyUI\\output\\{{ $('Extract').item.json.filename }}\n\n**View in Browser:**\nhttp://127.0.0.1:8188/view?filename={{ $('Extract').item.json.filename }}&type=output\n\n**Quick Open:**\n```\nexplorer D:\\Docker\\ComfyUI_windows_portable\\ComfyUI\\output\n```\n\n🎨 Your AI-generated image is ready! Click the URL to view!"
-            }
-          ]
-        },
-        "options": {}
+        "jsCode": "const metadata = $('Extract Image Info').item.json.metadata;\nconst filename = $('Extract Image Info').item.json.filename;\nconst imageUrl = `http://127.0.0.1:8188/view?filename=${filename}&type=output`;\n\nconst loraLine = metadata.loras?.length > 0 ? `- LoRAs: ${metadata.loras.join(', ')}\\n` : '';\nconst vaeLine = metadata.vae ? `- VAE: ${metadata.vae}\\n` : '';\nconst aspectLine = metadata.dimensions ? `- Dimensions: ${metadata.dimensions}\\n` : '';\nconst presetLine = metadata.preset ? `- Preset: ${metadata.preset}\\n` : '';\nconst styleLine = metadata.style ? `- Style: ${metadata.style}\\n` : '';\n\nconst message = `✨ **Image Generated Successfully!**\\n\\n![Generated Image](${imageUrl})\\n\\n**Filename:** ${filename}\\n\\n**Settings:**\\n${aspectLine}- Steps: ${metadata.steps}\\n- CFG: ${metadata.cfg}\\n- Sampler: ${metadata.sampler}\\n- Scheduler: ${metadata.scheduler}\\n- Model: ${metadata.model}\\n${vaeLine}${loraLine}${presetLine}${styleLine}- Seed: ${metadata.seed}\\n\\n🎨 Your AI-generated image is ready!`;\n\nreturn [{ json: { output: message } }];"
       },
-      "id": "6641db27-86c2-4579-bc42-1339864bf409",
-      "name": "Done",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
-        16464,
-        1024
+        2176,
+        208
       ],
-      "disabled": true
+      "id": "6e7538ac-de8a-416e-86d2-4c2a4071408e",
+      "name": "Format Image Output"
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=You are a helpful AI assistant.\n\n{{ $json.conversationHistory && $json.conversationHistory.length > 0 ? \"Recent conversation:\\n\" + $json.conversationHistory.map((msg, i) => (msg.role === 'user' ? 'User' : 'Assistant') + ': ' + msg.content).join('\\n') + \"\\n\\n\" : \"\" }}Current question: {{ $json.chatInput }}\n\nPlease respond to the current question. If the user refers to something from the previous conversation (like \"change it\", \"modify that\", \"update the code\"), use the conversation history above to understand the context.\n\nWhen providing code, always use proper markdown code blocks with language tags (e.g., ```php for PHP)."
+        "text": "=You are a helpful AI assistant.\n\n{{ $json.conversationHistory && $json.conversationHistory.length > 0 ? \"Recent conversation:\\n\" + $json.conversationHistory.map((msg, i) => (msg.role === 'user' ? 'User' : 'Assistant') + ': ' + msg.content).join('\\n') + \"\\n\\n\" : \"\" }}Current question: {{ $json.chatInput }}\n\nPlease respond to the current question."
       },
-      "id": "1b7f576d-a1ee-41f9-a3f7-c461daf5d995",
-      "name": "Chat",
+      "id": "42b98bb9-241e-40a1-be48-159220d6c1ae",
+      "name": "Regular Chat",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.5,
       "position": [
-        14640,
-        1328
+        80,
+        480
       ]
     },
     {
@@ -251,13 +461,13 @@
         "model": "qwen2.5:latest",
         "options": {}
       },
-      "id": "b7b7fa86-87d4-41e2-9e46-2e5d629a5d77",
-      "name": "Ollama2",
+      "id": "995f7de8-9529-43d6-a8cb-2b7728ea0bc3",
+      "name": "Ollama Chat Model",
       "type": "@n8n/n8n-nodes-langchain.lmOllama",
       "typeVersion": 1,
       "position": [
-        14656,
-        1456
+        160,
+        640
       ],
       "credentials": {
         "ollamaApi": {
@@ -280,74 +490,267 @@
         },
         "options": {}
       },
-      "id": "5bd4b057-a5ab-4144-982e-1bbb50b07ec2",
-      "name": "Format",
+      "id": "37d1859b-a831-40e6-99f4-2b7b969036db",
+      "name": "Format Chat Output",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        14864,
-        1264
+        368,
+        352
       ]
     },
     {
       "parameters": {
-        "public": true,
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
-      "typeVersion": 1.4,
-      "position": [
-        14224,
-        1152
-      ],
-      "id": "d131b31e-16e2-4d82-9377-965fb74a8722",
-      "name": "Chat Trigger",
-      "webhookId": "db604b2c-9149-41f1-bcc1-b1a5f38a1f3b"
-    },
-    {
-      "parameters": {
-        "jsCode": "// COMBINED: Binary data + formatted message with image link\nconst binaryData = $input.item.binary.data;\nconst metadata = $('Store').item.json.metadata;\nconst filename = $('Extract').item.json.filename;\nconst imageUrl = `http://127.0.0.1:8188/view?filename=${filename}&type=output`;\n\nconst message = `✨ **Image Generated Successfully!**\n\n![Generated Image](${imageUrl})\n\n**Filename:** ${filename}\n\n**Settings:**\n- Dimensions: ${metadata.dimensions}\n- Steps: ${metadata.steps}\n- CFG: ${metadata.cfg}\n- Sampler: ${metadata.sampler}\n- Scheduler: ${metadata.scheduler}\n- Model: ${metadata.model}\n- Seed: ${metadata.seed}\n\n[🖼️ View Full Size](${imageUrl})\n\n🎨 Your AI-generated image is ready!`;\n\nreturn [{\n  json: {\n    output: message\n  },\n  binary: {\n    data: binaryData\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        16448,
-        1232
-      ],
-      "id": "f3b1ba28-a1d3-45f5-a19d-80144a31f1a3",
-      "name": "Code in JavaScript",
-      "notesInFlow": false
-    },
-    {
-      "parameters": {
         "respondWith": "text",
-        "responseBody": "={{ $json.text }}",
+        "responseBody": "={{ $json.text || $json.output }}",
         "options": {}
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        15008,
-        1312
+        688,
+        -64
       ],
-      "id": "e5fc75cc-3806-436b-ad08-e1c043189f12",
+      "id": "a9e471a2-9bc7-495e-bd78-4c537b8dcb2b",
       "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "url": "http://192.168.50.202:8188/models/vae",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        864,
+        -240
+      ],
+      "id": "4d7d635c-871c-445f-956a-cfc5ab010fdd",
+      "name": "Get VAEs"
+    },
+    {
+      "parameters": {
+        "url": "http://192.168.50.202:8188/models/loras",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        864,
+        -432
+      ],
+      "id": "8c1041f3-8efc-482a-8bf7-ec838e898966",
+      "name": "Get LoRAs"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    checkpoints: $items(\"Wrap Checkpoints\")[0].json.list,\n    vae: $items(\"Wrap VAEs\")[0].json.list,\n    loras: $items(\"Wrap LoRAs\")[0].json.list\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        -384
+      ],
+      "id": "1b04d8cc-cd4d-4215-81ca-51fa8eb3a3a4",
+      "name": "Combine Model Lists"
+    },
+    {
+      "parameters": {
+        "url": "http://192.168.50.202:8188/models/checkpoints",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        864,
+        -80
+      ],
+      "id": "39eee3f2-252b-44e3-8949-c1d166733c2b",
+      "name": "Get Checkpoints"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    list: $input.all().map(i => i.json)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        -96
+      ],
+      "id": "aa56e966-664b-4948-b308-8ef609d44fbc",
+      "name": "Wrap Checkpoints"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    list: $input.all().map(i => i.json)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        -240
+      ],
+      "id": "044805d6-8ca9-4a12-98a8-c8947aa471a1",
+      "name": "Wrap VAEs"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    list: $input.all().map(i => i.json)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        -416
+      ],
+      "id": "624002de-1cf1-4c17-9db9-7ee51c4b0790",
+      "name": "Wrap LoRAs"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {
+          "clashHandling": {
+            "values": {
+              "resolveClash": "addSuffix"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1808,
+        -224
+      ],
+      "id": "a974d2b5-99d6-4ea9-9cef-cd5be051538f",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Save the original chatInput for later use\nconst originalInput = $json.chatInput || '';\n\nconsole.log('💾 Saving original input:', originalInput.substring(0, 100));\n\nreturn [{\n  json: {\n    ...$json,\n    originalChatInput: originalInput\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        384
+      ],
+      "id": "f5e59e92-f6c4-49db-9377-483b19c7b7ce",
+      "name": "Save Original Input"
     }
   ],
   "pinData": {},
   "connections": {
-    "Contains 'image'?": {
+    "Chat Trigger": {
       "main": [
         [
           {
-            "node": "AI Engineer",
+            "node": "Check Attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Attachments": {
+      "main": [
+        [
+          {
+            "node": "Has Images?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Images?": {
+      "main": [
+        [
+          {
+            "node": "Prepare Vision",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Chat",
+            "node": "Contains 'image'?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Vision": {
+      "main": [
+        [
+          {
+            "node": "Llava Direct API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Llava Direct API": {
+      "main": [
+        [
+          {
+            "node": "Format Vision Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Vision Output": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contains 'image'?": {
+      "main": [
+        [
+          {
+            "node": "Save Original Input",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Regular Chat",
             "type": "main",
             "index": 0
           }
@@ -358,14 +761,14 @@
       "main": [
         [
           {
-            "node": "Parse",
+            "node": "Parse Prompts",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Ollama": {
+    "Ollama Engineer": {
       "ai_languageModel": [
         [
           {
@@ -376,51 +779,118 @@
         ]
       ]
     },
-    "Parse": {
+    "Parse Prompts": {
       "main": [
         [
           {
-            "node": "Build Enhanced",
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Checkpoints",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Build Enhanced": {
+    "Build ComfyUI Workflow": {
       "main": [
         [
           {
-            "node": "POST",
+            "node": "POST to ComfyUI",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "POST": {
+    "POST to ComfyUI": {
       "main": [
         [
           {
-            "node": "Store",
+            "node": "Store Polling Data",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Check": {
+    "Store Polling Data": {
       "main": [
         [
           {
-            "node": "Extract",
+            "node": "Check History",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Extract": {
+    "Check History": {
+      "main": [
+        [
+          {
+            "node": "Parse Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Status": {
+      "main": [
+        [
+          {
+            "node": "Is Complete?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Complete?": {
+      "main": [
+        [
+          {
+            "node": "Extract Image Info",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 2s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2s": {
+      "main": [
+        [
+          {
+            "node": "Loop Back",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Back": {
+      "main": [
+        [
+          {
+            "node": "Check History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Image Info": {
       "main": [
         [
           {
@@ -435,84 +905,150 @@
       "main": [
         [
           {
-            "node": "Code in JavaScript",
+            "node": "Format Image Output",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Chat": {
+    "Format Image Output": {
       "main": [
         [
           {
-            "node": "Format",
+            "node": "Respond to Webhook",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Ollama2": {
+    "Regular Chat": {
+      "main": [
+        [
+          {
+            "node": "Format Chat Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
       "ai_languageModel": [
         [
           {
-            "node": "Chat",
+            "node": "Regular Chat",
             "type": "ai_languageModel",
             "index": 0
           }
         ]
       ]
     },
-    "Store": {
-      "main": [
-        [
-          {
-            "node": "Dynamic Wait",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Dynamic Wait": {
-      "main": [
-        [
-          {
-            "node": "Check",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Chat Trigger": {
-      "main": [
-        [
-          {
-            "node": "Contains 'image'?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript": {
-      "main": [
-        [
-          {
-            "node": "Done",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Format": {
+    "Format Chat Output": {
       "main": [
         [
           {
             "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get LoRAs": {
+      "main": [
+        [
+          {
+            "node": "Wrap LoRAs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get VAEs": {
+      "main": [
+        [
+          {
+            "node": "Wrap VAEs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine Model Lists": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get Checkpoints": {
+      "main": [
+        [
+          {
+            "node": "Wrap Checkpoints",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wrap VAEs": {
+      "main": [
+        [
+          {
+            "node": "Get LoRAs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wrap Checkpoints": {
+      "main": [
+        [
+          {
+            "node": "Get VAEs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wrap LoRAs": {
+      "main": [
+        [
+          {
+            "node": "Combine Model Lists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Build ComfyUI Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Original Input": {
+      "main": [
+        [
+          {
+            "node": "AI Engineer",
             "type": "main",
             "index": 0
           }
@@ -525,10 +1061,10 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "53facacf-3301-4258-907d-56e7f8fea2e1",
+  "versionId": "b0585783-5f66-4bf4-95df-c5277a9dba6b",
   "meta": {
     "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
   },
-  "id": "mxD49DtykKpKuf4O",
+  "id": "7l86HYaBVOM7O9sB",
   "tags": []
 }
