@@ -12,40 +12,33 @@
         }
 
         :root {
-            /* Dark mode (default) */
-            --bg-primary: #343541;
-            --bg-secondary: #202123;
-            --bg-tertiary: #444654;
-            --bg-input: #40414f;
-            --bg-hover: #2a2b32;
-            --border-color: var(--border-color);
-            --text-primary: #ececf1;
-            --text-secondary: #c5c5d2;
-            --text-muted: #8e8ea0;
-            --code-bg: #2a2b32;
-            --accent-green: #19c37d;
-            --accent-green-hover: #1a9c65;
+            --primary-color: #f97316;
+            --sidebar-bg: #fafafa;
+            --main-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --border-color: #e5e7eb;
+            --hover-bg: #f3f4f6;
+            --code-bg: #f9fafb;
+            --button-hover: #f3f4f6;
         }
 
-        body.light-mode {
-            /* Light mode */
-            --bg-primary: #ffffff;
-            --bg-secondary: #f7f7f8;
-            --bg-tertiary: #ffffff;
-            --bg-input: #ffffff;
-            --bg-hover: #ececf1;
-            --border-color: #d9d9e3;
-            --text-primary: #343541;
-            --text-secondary: #565869;
-            --text-muted: #8e8ea0;
-            --code-bg: #f7f7f8;
-            --accent-green: #10a37f;
-            --accent-green-hover: #0e8c6f;
+        body.dark-mode {
+            --sidebar-bg: #171717;
+            --main-bg: #0a0a0a;
+            --text-primary: #e5e5e5;
+            --text-secondary: #a3a3a3;
+            --text-muted: #737373;
+            --border-color: #262626;
+            --hover-bg: #1c1c1c;
+            --code-bg: #171717;
+            --button-hover: #262626;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: var(--bg-primary);
+            background: var(--main-bg);
             height: 100vh;
             display: flex;
             color: var(--text-primary);
@@ -55,83 +48,99 @@
         /* Sidebar */
         .sidebar {
             width: 260px;
-            background: var(--bg-secondary);
+            background: var(--sidebar-bg);
             display: flex;
             flex-direction: column;
             border-right: 1px solid var(--border-color);
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .sidebar-header {
-            padding: 12px;
-            display: flex;
-            gap: 8px;
+            padding: 16px;
         }
 
-        .new-chat-btn {
-            flex: 1;
-            padding: 12px;
-            background: transparent;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-primary);
-            cursor: pointer;
+        .app-title {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .new-chat-btn:hover {
-            background: var(--bg-hover);
-        }
-
-        .theme-toggle {
-            width: 40px;
-            height: 40px;
-            background: transparent;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-primary);
-            cursor: pointer;
+            gap: 8px;
             font-size: 18px;
-            transition: all 0.2s;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .app-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-color);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+            font-weight: bold;
         }
 
-        .theme-toggle:hover {
-            background: var(--bg-hover);
+        .new-chat-btn {
+            width: 100%;
+            padding: 10px 14px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .new-chat-btn:hover {
+            background: var(--hover-bg);
+        }
+
+        .sidebar-section {
+            padding: 0 16px;
+            margin-top: 12px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
         }
 
         .chat-history {
             flex: 1;
             overflow-y: auto;
-            padding: 8px;
+            padding: 8px 16px;
         }
 
         .history-item {
-            padding: 10px 12px;
-            margin-bottom: 4px;
-            border-radius: 6px;
+            padding: 8px 12px;
+            margin-bottom: 2px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
             color: var(--text-primary);
             transition: background 0.2s;
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
         .history-item:hover {
-            background: var(--bg-hover);
+            background: var(--hover-bg);
         }
 
         .history-item.active {
-            background: var(--bg-primary);
+            background: var(--primary-color);
+            color: white;
         }
 
         .history-item-text {
@@ -141,43 +150,52 @@
             flex: 1;
         }
 
-        .delete-chat-btn {
+        .delete-btn {
             opacity: 0;
             background: transparent;
             border: none;
-            color: var(--text-primary);
+            color: inherit;
             cursor: pointer;
             padding: 4px;
-            font-size: 16px;
+            font-size: 14px;
         }
 
-        .history-item:hover .delete-chat-btn {
+        .history-item:hover .delete-btn {
             opacity: 1;
         }
 
         .sidebar-footer {
-            padding: 12px;
+            padding: 16px;
             border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .footer-btn {
-            width: 100%;
-            padding: 10px;
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            cursor: pointer;
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
             font-size: 14px;
-            text-align: left;
-            border-radius: 6px;
-            transition: background 0.2s;
         }
 
-        .footer-btn:hover {
-            background: var(--bg-hover);
+        .user-info {
+            flex: 1;
         }
 
-        /* Main Chat Area */
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Main Content */
         .main-content {
             flex: 1;
             display: flex;
@@ -185,8 +203,7 @@
         }
 
         .chat-header {
-            padding: 12px 16px;
-            background: var(--bg-primary);
+            padding: 16px 24px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
@@ -194,43 +211,90 @@
         }
 
         .model-selector {
+            padding: 6px 12px;
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
             background: transparent;
             border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 6px 12px;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--hover-bg);
         }
 
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            background: var(--bg-primary);
+            background: var(--main-bg);
         }
 
-        .message-group {
-            border-bottom: 1px solid var(--border-color);
+        .message-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 24px;
         }
 
         .message {
-            padding: 24px;
-            max-width: 800px;
-            margin: 0 auto;
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
-        .message.user {
-            background: var(--bg-primary);
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 14px;
+            font-weight: 600;
         }
 
-        .message.assistant {
-            background: var(--bg-tertiary);
+        .message.user .message-avatar {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .message.assistant .message-avatar {
+            background: #e5e7eb;
+            color: var(--text-primary);
         }
 
         .message-content {
-            font-size: 16px;
-            line-height: 1.75;
+            flex: 1;
+            font-size: 15px;
+            line-height: 1.7;
             color: var(--text-primary);
+        }
+
+        .message-content p {
+            margin-bottom: 12px;
         }
 
         .message-content strong {
@@ -239,129 +303,100 @@
 
         .message-image {
             max-width: 100%;
-            border-radius: 8px;
-            margin-top: 12px;
+            border-radius: 12px;
+            margin: 16px 0;
             cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s;
         }
 
-        /* Code blocks */
-        .message-content pre {
-            background: var(--bg-hover);
+        .message-image:hover {
+            transform: scale(1.01);
+        }
+
+        /* Code Blocks */
+        .code-block-wrapper {
+            margin: 16px 0;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 16px;
-            overflow-x: auto;
-            margin: 12px 0;
-            position: relative;
-        }
-
-        .message-content code {
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            color: var(--text-primary);
-        }
-
-        .code-block-wrapper {
-            position: relative;
-            margin: 12px 0;
+            overflow: hidden;
         }
 
         .code-header {
-            background: var(--bg-hover);
-            border: 1px solid var(--border-color);
-            border-bottom: none;
-            border-radius: 8px 8px 0 0;
-            padding: 8px 12px;
+            background: var(--code-bg);
+            padding: 8px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .code-language {
             font-size: 12px;
-            color: var(--text-muted);
-            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
-        .copy-code-btn {
+        .code-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .code-action-btn {
             background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 4px 12px;
+            border: none;
+            color: var(--text-secondary);
+            padding: 4px 8px;
             border-radius: 4px;
             cursor: pointer;
             font-size: 12px;
             transition: all 0.2s;
         }
 
-        .copy-code-btn:hover {
-            background: var(--bg-input);
+        .code-action-btn:hover {
+            background: var(--button-hover);
+            color: var(--text-primary);
         }
 
-        .copy-code-btn.copied {
-            background: #10a37f;
-            border-color: #10a37f;
+        .code-action-btn.copied {
+            color: var(--primary-color);
         }
 
-        .mode-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            margin-bottom: 8px;
-            font-weight: 500;
+        .message-content pre {
+            background: var(--code-bg);
+            padding: 16px;
+            overflow-x: auto;
+            margin: 0;
+            border-radius: 0 0 8px 8px;
+            transition: all 0.3s ease;
         }
 
-        .mode-badge.chat {
-            background: #1a7f64;
-            color: white;
+        .code-pre {
+            background: var(--code-bg);
+            padding: 16px;
+            overflow-x: auto;
+            margin: 0;
+            border-radius: 0 0 8px 8px;
+            transition: all 0.3s ease;
         }
 
-        .mode-badge.image {
-            background: #8e44ad;
-            color: white;
-        }
-
-        .progress-container {
-            margin-top: 12px;
-            padding: 12px;
-            background: var(--bg-hover);
-            border-radius: 8px;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: #565869;
-            border-radius: 3px;
-            overflow: hidden;
-            margin-bottom: 8px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #10a37f;
-            transition: width 0.3s ease;
-            border-radius: 3px;
-        }
-
-        .progress-text {
-            font-size: 12px;
-            color: var(--text-secondary);
-            display: flex;
-            justify-content: space-between;
+        .message-content code {
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 13px;
+            color: var(--text-primary);
         }
 
         .loading {
             display: inline-flex;
             gap: 4px;
+            padding: 4px 0;
         }
 
         .loading-dot {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
-            background: #8e8ea0;
+            background: var(--text-muted);
             animation: bounce 1.4s infinite ease-in-out;
         }
 
@@ -373,10 +408,23 @@
             40% { transform: scale(1); }
         }
 
+        /* Streaming cursor */
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            background: var(--text-primary);
+            animation: blink 1s infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
         /* Input Area */
         .input-container {
-            padding: 24px;
-            background: var(--bg-primary);
+            padding: 20px 24px;
             border-top: 1px solid var(--border-color);
         }
 
@@ -386,95 +434,151 @@
             position: relative;
         }
 
+        .attachment-preview {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .attachment-item {
+            position: relative;
+            padding: 8px 12px;
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .attachment-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .attachment-name {
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .attachment-remove {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 2px 6px;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+
+        .attachment-remove:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
         .chat-input {
             width: 100%;
-            min-height: 24px;
+            min-height: 52px;
             max-height: 200px;
-            padding: 12px 52px 12px 16px;
-            background: var(--bg-input);
+            padding: 14px 100px 14px 16px;
+            background: var(--code-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             color: var(--text-primary);
-            font-size: 16px;
+            font-size: 15px;
             font-family: inherit;
             resize: none;
             outline: none;
+            transition: border-color 0.2s;
         }
 
         .chat-input:focus {
-            border-color: var(--text-muted);
+            border-color: var(--primary-color);
         }
 
-        .send-button {
+        .input-actions {
             position: absolute;
-            right: 12px;
-            bottom: 12px;
-            width: 32px;
-            height: 32px;
-            background: var(--accent-green);
+            right: 8px;
+            bottom: 8px;
+            display: flex;
+            gap: 4px;
+        }
+
+        .input-btn {
+            width: 36px;
+            height: 36px;
+            background: transparent;
             border: none;
-            border-radius: 6px;
-            color: white;
+            border-radius: 8px;
+            color: var(--text-secondary);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s;
-        }
-
-        .send-button:hover:not(:disabled) {
-            background: var(--accent-green-hover);
-        }
-
-        .send-button:disabled {
-            background: #565869;
-            cursor: not-allowed;
-        }
-
-        .quick-actions {
-            max-width: 800px;
-            margin: 0 auto 16px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .quick-action-btn {
-            padding: 8px 12px;
-            background: var(--bg-hover);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 13px;
-            cursor: pointer;
             transition: all 0.2s;
         }
 
-        .quick-action-btn:hover {
-            background: var(--bg-input);
-            border-color: var(--text-muted);
+        .input-btn:hover {
+            background: var(--button-hover);
         }
 
-        /* Empty state */
+        .send-button {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .send-button:hover:not(:disabled) {
+            background: #ea580c;
+        }
+
+        .send-button:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        /* Empty State */
         .empty-state {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100%;
-            padding: 24px;
+            padding: 48px 24px;
             text-align: center;
         }
 
-        .empty-state h2 {
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--code-bg);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 32px;
-            margin-bottom: 32px;
+            margin-bottom: 24px;
+        }
+
+        .empty-state h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
             color: var(--text-primary);
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
         }
 
         .example-prompts {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 12px;
             max-width: 800px;
             width: 100%;
@@ -482,33 +586,40 @@
 
         .example-card {
             padding: 16px;
-            background: var(--bg-tertiary);
+            background: var(--code-bg);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
             text-align: left;
         }
 
         .example-card:hover {
-            background: #4a4b5a;
-            border-color: var(--text-muted);
+            background: var(--hover-bg);
+            border-color: var(--primary-color);
+        }
+
+        .example-icon {
+            font-size: 20px;
+            margin-bottom: 8px;
         }
 
         .example-title {
             font-weight: 600;
             margin-bottom: 4px;
             color: var(--text-primary);
+            font-size: 14px;
         }
 
         .example-text {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-secondary);
         }
 
         /* Scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
+            height: 6px;
         }
 
         ::-webkit-scrollbar-track {
@@ -516,12 +627,12 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #565869;
-            border-radius: 4px;
+            background: #d1d5db;
+            border-radius: 3px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #6e6e80;
+            background: #9ca3af;
         }
 
         @media (max-width: 768px) {
@@ -534,57 +645,61 @@
 <body>
     <div class="sidebar">
         <div class="sidebar-header">
+            <div class="app-title">
+                <div class="app-icon">🤖</div>
+                <span>AI Assistant</span>
+            </div>
             <button class="new-chat-btn" onclick="newChat()">
-                <span>➕</span>
-                <span>New chat</span>
+                <span>✏️</span>
+                <span>New Chat</span>
             </button>
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
-                <span id="themeIcon">☀️</span>
-            </button>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="section-title">Today</div>
         </div>
 
         <div class="chat-history" id="chatHistory">
         </div>
 
         <div class="sidebar-footer">
-            <button class="footer-btn" onclick="clearAllHistory()">
-                🗑️ Clear conversations
-            </button>
+            <div class="user-avatar">U</div>
+            <div class="user-info">
+                <div class="user-name">User</div>
+            </div>
         </div>
     </div>
 
     <div class="main-content">
         <div class="chat-header">
-            <select class="model-selector">
-                <option>AI Assistant</option>
-            </select>
+            <div class="model-selector">
+                <span>🤖</span>
+                <span>AI Assistant</span>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="toggleTheme()" title="Toggle Theme" id="themeBtn">🌙</button>
+            </div>
         </div>
 
         <div class="chat-messages" id="messages">
         </div>
 
         <div class="input-container">
-            <div class="quick-actions">
-                <button class="quick-action-btn" onclick="insertExample('create image of sunset over mountains')">
-                    🌄 Create sunset image
-                </button>
-                <button class="quick-action-btn" onclick="insertExample('create image of cute cat')">
-                    🐱 Create cat image
-                </button>
-                <button class="quick-action-btn" onclick="insertExample('What is artificial intelligence?')">
-                    💬 Explain AI
-                </button>
-            </div>
             <div class="input-wrapper">
+                <div class="attachment-preview" id="attachmentPreview"></div>
                 <textarea 
                     id="userInput" 
                     class="chat-input" 
                     placeholder="Send a message..."
                     rows="1"
                 ></textarea>
-                <button id="sendBtn" class="send-button" onclick="sendMessage()">
-                    ➤
-                </button>
+                <div class="input-actions">
+                    <input type="file" id="fileInput" accept="image/*,.pdf,.txt,.doc,.docx" style="display: none;" onchange="handleFileSelect(event)">
+                    <button class="input-btn" title="Attach File" onclick="document.getElementById('fileInput').click()">📎</button>
+                    <button id="sendBtn" class="input-btn send-button" onclick="sendMessage()">
+                        ➤
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -595,9 +710,13 @@
         const sendBtn = document.getElementById('sendBtn');
         const chatHistoryDiv = document.getElementById('chatHistory');
 
+        const N8N_WEBHOOK_URL = 'http://192.168.50.202:5678/webhook/db604b2c-9149-41f1-bcc1-b1a5f38a1f3b/chat';
+
         let currentChatId = generateChatId();
         let chatHistory = {};
         let hasMessages = false;
+        let conversationHistory = [];
+        let attachedFiles = []; // Store attached files
 
         function initializeApp() {
             chatHistory = loadChatHistory();
@@ -605,52 +724,123 @@
             loadTheme();
         }
 
-        initializeApp();
+        // Handle file selection
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
 
-        // Theme Management
-        function toggleTheme() {
-            const body = document.body;
-            const themeIcon = document.getElementById('themeIcon');
-            
-            if (body.classList.contains('light-mode')) {
-                body.classList.remove('light-mode');
-                themeIcon.textContent = '☀️';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                body.classList.add('light-mode');
-                themeIcon.textContent = '🌙';
-                localStorage.setItem('theme', 'light');
+            Array.from(files).forEach(file => {
+                // Check file size (max 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`File "${file.name}" is too large. Maximum size is 10MB.`);
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const fileData = {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        data: e.target.result // Base64 data
+                    };
+                    
+                    attachedFiles.push(fileData);
+                    updateAttachmentPreview();
+                };
+
+                reader.readAsDataURL(file);
+            });
+
+            // Reset file input
+            event.target.value = '';
+        }
+
+        // Update attachment preview
+        function updateAttachmentPreview() {
+            const preview = document.getElementById('attachmentPreview');
+            if (!preview) return;
+
+            if (attachedFiles.length === 0) {
+                preview.innerHTML = '';
+                return;
             }
+
+            preview.innerHTML = attachedFiles.map((file, index) => {
+                const isImage = file.type.startsWith('image/');
+                const icon = isImage ? `<img src="${file.data}" alt="${file.name}">` : '📄';
+                const sizeKB = (file.size / 1024).toFixed(1);
+
+                return `<div class="attachment-item">
+                    ${isImage ? icon : '<span style="font-size: 24px;">📄</span>'}
+                    <span class="attachment-name" title="${file.name}">${file.name}</span>
+                    <span style="color: var(--text-muted); font-size: 11px;">${sizeKB}KB</span>
+                    <button class="attachment-remove" onclick="removeAttachment(${index})" title="Remove">✕</button>
+                </div>`;
+            }).join('');
+        }
+
+        // Remove attachment
+        function removeAttachment(index) {
+            attachedFiles.splice(index, 1);
+            updateAttachmentPreview();
         }
 
         function loadTheme() {
             const savedTheme = localStorage.getItem('theme');
-            const themeIcon = document.getElementById('themeIcon');
+            const themeBtn = document.getElementById('themeBtn');
             
-            if (savedTheme === 'light') {
-                document.body.classList.add('light-mode');
-                themeIcon.textContent = '🌙';
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeBtn.textContent = '☀️';
             } else {
-                themeIcon.textContent = '☀️';
+                themeBtn.textContent = '🌙';
             }
         }
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeBtn = document.getElementById('themeBtn');
+            
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                themeBtn.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.add('dark-mode');
+                themeBtn.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        initializeApp();
 
         function showEmptyState() {
             messagesDiv.innerHTML = `
                 <div class="empty-state">
-                    <h2>🎨 AI Assistant</h2>
+                    <div class="empty-state-icon">🎨</div>
+                    <h2>Welcome to AI Assistant</h2>
+                    <p>Start a conversation or try one of these examples</p>
                     <div class="example-prompts">
-                        <div class="example-card" onclick="insertExample('create image of golden retriever')">
-                            <div class="example-title">🎨 Create Image</div>
-                            <div class="example-text">Generate stunning images from descriptions</div>
+                        <div class="example-card" onclick="insertExample('generate image of RST logo')">
+                            <div class="example-icon">🎨</div>
+                            <div class="example-title">Generate Logo</div>
+                            <div class="example-text">Create professional logo designs</div>
                         </div>
-                        <div class="example-card" onclick="insertExample('What is machine learning?')">
-                            <div class="example-title">💬 Ask Questions</div>
+                        <div class="example-card" onclick="insertExample('generate image of cute cat')">
+                            <div class="example-icon">🖼️</div>
+                            <div class="example-title">Create Image</div>
+                            <div class="example-text">Generate images from descriptions</div>
+                        </div>
+                        <div class="example-card" onclick="insertExample('What is artificial intelligence?')">
+                            <div class="example-icon">💬</div>
+                            <div class="example-title">Ask Questions</div>
                             <div class="example-text">Get answers to any question</div>
                         </div>
-                        <div class="example-card" onclick="insertExample('create cartoon image of happy dog')">
-                            <div class="example-title">🎭 Cartoon Style</div>
-                            <div class="example-text">Create cartoon-style illustrations</div>
+                        <div class="example-card" onclick="insertExample('generate image of cartoon dog')">
+                            <div class="example-icon">🎭</div>
+                            <div class="example-title">Cartoon Style</div>
+                            <div class="example-text">Create cartoon illustrations</div>
                         </div>
                     </div>
                 </div>
@@ -669,8 +859,28 @@
         }
 
         function saveChatHistory() {
-            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-            updateHistorySidebar();
+            try {
+                localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+                updateHistorySidebar();
+            } catch (e) {
+                if (e.name === 'QuotaExceededError') {
+                    console.warn('localStorage quota exceeded, cleaning old chats...');
+                    // Keep only last 10 chats
+                    const chats = Object.values(chatHistory).sort((a, b) => b.timestamp - a.timestamp);
+                    chatHistory = {};
+                    chats.slice(0, 10).forEach(chat => {
+                        chatHistory[chat.id] = chat;
+                    });
+                    try {
+                        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+                        updateHistorySidebar();
+                    } catch (e2) {
+                        console.error('Still too large, clearing all history');
+                        chatHistory = {};
+                        localStorage.removeItem('chatHistory');
+                    }
+                }
+            }
         }
 
         function saveCurrentChat() {
@@ -705,12 +915,12 @@
             const chats = Object.values(chatHistory).sort((a, b) => b.timestamp - a.timestamp);
             
             if (chats.length === 0) {
-                chatHistoryDiv.innerHTML = '<div style="padding: 12px; text-align: center; color: var(--text-muted); font-size: 14px;">No conversations yet</div>';
+                chatHistoryDiv.innerHTML = '<div style="padding: 12px; text-align: center; color: var(--text-muted); font-size: 13px;">No conversations yet</div>';
             } else {
                 chatHistoryDiv.innerHTML = chats.map(chat => `
                     <div class="history-item ${chat.id === currentChatId ? 'active' : ''}" onclick="loadChat('${chat.id}')">
-                        <span class="history-item-text">${chat.title}</span>
-                        <button class="delete-chat-btn" onclick="event.stopPropagation(); deleteChat('${chat.id}')">🗑️</button>
+                        <span class="history-item-text">💬 ${chat.title}</span>
+                        <button class="delete-btn" onclick="event.stopPropagation(); deleteChat('${chat.id}')">🗑️</button>
                     </div>
                 `).join('');
             }
@@ -720,6 +930,7 @@
             saveCurrentChat();
             currentChatId = generateChatId();
             hasMessages = false;
+            conversationHistory = [];
             showEmptyState();
             updateHistorySidebar();
             userInput.focus();
@@ -732,22 +943,32 @@
             if (chat) {
                 currentChatId = chatId;
                 hasMessages = true;
-                messagesDiv.innerHTML = '';
+                conversationHistory = [];
+                messagesDiv.innerHTML = '<div class="message-wrapper" id="messageWrapper"></div>';
+                const wrapper = document.getElementById('messageWrapper');
                 
                 chat.messages.forEach(msg => {
-                    const messageGroup = document.createElement('div');
-                    messageGroup.className = 'message-group';
-                    
                     const messageDiv = document.createElement('div');
                     messageDiv.className = `message ${msg.type}`;
                     
-                    const contentDiv = document.createElement('div');
-                    contentDiv.className = 'message-content';
-                    contentDiv.innerHTML = msg.content;
+                    const avatar = document.createElement('div');
+                    avatar.className = 'message-avatar';
+                    avatar.textContent = msg.type === 'user' ? 'U' : 'AI';
                     
-                    messageDiv.appendChild(contentDiv);
-                    messageGroup.appendChild(messageDiv);
-                    messagesDiv.appendChild(messageGroup);
+                    const content = document.createElement('div');
+                    content.className = 'message-content';
+                    content.innerHTML = msg.content;
+                    
+                    messageDiv.appendChild(avatar);
+                    messageDiv.appendChild(content);
+                    wrapper.appendChild(messageDiv);
+
+                    if (conversationHistory.length < 6) {
+                        conversationHistory.push({
+                            role: msg.type === 'user' ? 'user' : 'assistant',
+                            content: msg.content.replace(/<[^>]*>/g, '')
+                        });
+                    }
                 });
                 
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -762,14 +983,6 @@
                 if (chatId === currentChatId) {
                     newChat();
                 }
-            }
-        }
-
-        function clearAllHistory() {
-            if (confirm('Delete all conversations? This cannot be undone.')) {
-                chatHistory = {};
-                saveChatHistory();
-                newChat();
             }
         }
 
@@ -799,97 +1012,180 @@
         }
 
         function formatCodeBlocks(text) {
-            // Match code blocks with optional language specifier
-            const codeBlockPattern = /```(\w+)?\s*\n?([\s\S]*?)```/g;
+            // Match code blocks: ```language\ncode```
+            const codeBlockPattern = /```(\w+)?\n([\s\S]*?)```/g;
+            let matches = [];
+            let match;
             
-            text = text.replace(codeBlockPattern, (match, lang, code) => {
-                const language = lang || 'code';
+            // Find all code blocks
+            while ((match = codeBlockPattern.exec(text)) !== null) {
+                matches.push({
+                    fullMatch: match[0],
+                    language: match[1] || 'code',
+                    code: match[2]
+                });
+            }
+            
+            // Replace each code block
+            matches.forEach((m, index) => {
+                const language = m.language;
+                const code = m.code.trim();
                 
-                // Clean the code
-                let cleanCode = code.trim();
-                
-                // Escape HTML for display only
-                const escapedCode = cleanCode
+                // Escape HTML
+                const escapedCode = code
                     .replace(/&/g, '&amp;')
                     .replace(/</g, '&lt;')
                     .replace(/>/g, '&gt;');
                 
-                // Create a unique ID for this code block
-                const codeId = 'code_' + Math.random().toString(36).substr(2, 9);
+                // Generate unique IDs
+                const blockId = 'block_' + Date.now() + '_' + index;
+                const codeId = 'code_' + Date.now() + '_' + index;
                 
-                // Store the code in a temporary element attribute (will be read by click handler)
-                return `<div class="code-block-wrapper">
-                        <div class="code-header">
-                            <span class="code-language">${language.toUpperCase()}</span>
-                            <button class="copy-code-btn" data-code-id="${codeId}">Copy code</button>
+                // Create HTML for code block
+                const codeBlockHtml = `<div class="code-block-wrapper" id="${blockId}">
+                    <div class="code-header">
+                        <span class="code-language">${language.toUpperCase()}</span>
+                        <div class="code-actions">
+                            <button class="code-action-btn" onclick="toggleCodeBlock('${blockId}')">Collapse</button>
+                            <button class="code-action-btn" onclick="copyCodeBlock('${codeId}', this)">Copy</button>
                         </div>
-                        <pre id="${codeId}"><code>${escapedCode}</code></pre>
-                    </div>`;
+                    </div>
+                    <pre id="${codeId}"><code>${escapedCode}</code></pre>
+                </div>`;
+                
+                // Replace in text
+                text = text.replace(m.fullMatch, codeBlockHtml);
             });
             
             return text;
         }
 
-        // Add click event listener for copy buttons
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('copy-code-btn')) {
-                const codeId = e.target.getAttribute('data-code-id');
-                const codeElement = document.getElementById(codeId);
-                if (codeElement) {
-                    const code = codeElement.textContent;
-                    copyCodeBlock(e.target, code);
-                }
+        // Copy code block
+        function copyCodeBlock(codeId, button) {
+            const codeElement = document.getElementById(codeId);
+            if (!codeElement) {
+                console.error('Code element not found:', codeId);
+                button.textContent = '✗ Not Found';
+                setTimeout(() => button.textContent = 'Copy', 2000);
+                return;
             }
-        });
+            
+            const code = codeElement.textContent;
+            
+            // Try modern clipboard API first
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(code).then(() => {
+                    button.textContent = '✓ Copied';
+                    button.classList.add('copied');
+                    setTimeout(() => {
+                        button.textContent = 'Copy';
+                        button.classList.remove('copied');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Clipboard API failed:', err);
+                    fallbackCopy(code, button);
+                });
+            } else {
+                // Fallback for HTTP or older browsers
+                fallbackCopy(code, button);
+            }
+        }
 
-        function copyCodeBlock(button, code) {
-            navigator.clipboard.writeText(code).then(() => {
-                const originalText = button.textContent;
-                button.textContent = '✓ Copied!';
-                button.classList.add('copied');
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.classList.remove('copied');
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy:', err);
+        // Fallback copy method (works on HTTP)
+        function fallbackCopy(text, button) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.top = '-9999px';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            
+            try {
+                textarea.select();
+                textarea.setSelectionRange(0, text.length);
+                const successful = document.execCommand('copy');
+                
+                if (successful) {
+                    button.textContent = '✓ Copied';
+                    button.classList.add('copied');
+                    setTimeout(() => {
+                        button.textContent = 'Copy';
+                        button.classList.remove('copied');
+                    }, 2000);
+                } else {
+                    button.textContent = '✗ Failed';
+                    setTimeout(() => button.textContent = 'Copy', 2000);
+                }
+            } catch (err) {
+                console.error('Fallback copy failed:', err);
                 button.textContent = '✗ Failed';
-                setTimeout(() => {
-                    button.textContent = 'Copy code';
-                }, 2000);
-            });
+                setTimeout(() => button.textContent = 'Copy', 2000);
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        // Toggle code block collapse
+        function toggleCodeBlock(blockId) {
+            const block = document.getElementById(blockId);
+            if (!block) {
+                console.error('Block not found:', blockId);
+                return;
+            }
+            
+            const pre = block.querySelector('pre');
+            const button = block.querySelector('.code-action-btn:first-child');
+            
+            if (!pre || !button) {
+                console.error('Pre or button not found');
+                return;
+            }
+            
+            if (pre.style.display === 'none') {
+                pre.style.display = 'block';
+                button.textContent = 'Collapse';
+            } else {
+                pre.style.display = 'none';
+                button.textContent = 'Expand';
+            }
         }
 
         async function sendMessage() {
             const message = userInput.value.trim();
-            if (!message) return;
+            if (!message && attachedFiles.length === 0) return;
 
             if (!hasMessages) {
-                messagesDiv.innerHTML = '';
+                messagesDiv.innerHTML = '<div class="message-wrapper" id="messageWrapper"></div>';
                 hasMessages = true;
             }
+
+            const wrapper = document.getElementById('messageWrapper') || messagesDiv;
 
             userInput.disabled = true;
             sendBtn.disabled = true;
 
-            addMessage(message, 'user');
+            // Build user message with thumbnails
+            let userMessageHtml = message || 'Image';
+            
+            // Add image thumbnails to user message
+            attachedFiles.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    userMessageHtml += `<br><img src="${file.data}" alt="${file.name}" class="message-image" style="max-width: 300px; margin-top: 8px; cursor: pointer;" onclick="window.open('${file.data}', '_blank')" />`;
+                }
+            });
+
+            // Add user message
+            addMessage(userMessageHtml, 'user');
             userInput.value = '';
             userInput.style.height = 'auto';
 
-            // Better image detection - only trigger on specific phrases
-            const isImageRequest = 
-                message.toLowerCase().includes('create image') || 
-                message.toLowerCase().includes('generate image') ||
-                message.toLowerCase().includes('make image') ||
-                message.toLowerCase().includes('draw image') ||
-                message.toLowerCase().startsWith('create a') && message.toLowerCase().includes('picture') ||
-                message.toLowerCase().startsWith('generate a') && message.toLowerCase().includes('picture');
+            conversationHistory.push({ role: 'user', content: message });
+            if (conversationHistory.length > 6) {
+                conversationHistory = conversationHistory.slice(-6);
+            }
 
-            const modeClass = isImageRequest ? 'image' : 'chat';
-            const modeText = isImageRequest ? '🎨 Generating image' : '💬 Thinking';
-
+            // Show loading
             const loadingId = addMessage(`
-                <span class="mode-badge ${modeClass}">${modeText}</span>
                 <div class="loading">
                     <div class="loading-dot"></div>
                     <div class="loading-dot"></div>
@@ -898,158 +1194,50 @@
             `, 'assistant', true);
 
             try {
-                if (isImageRequest) {
-                    await handleImageGeneration(message, loadingId);
-                } else {
-                    await handleChat(message, loadingId);
+                // Debug: Log what we're sending
+                console.log('📤 Sending to n8n:', {
+                    message: message,
+                    attachmentCount: attachedFiles.length,
+                    attachments: attachedFiles.map(f => ({
+                        name: f.name,
+                        type: f.type,
+                        size: f.size,
+                        hasData: !!f.data,
+                        dataLength: f.data ? f.data.length : 0
+                    }))
+                });
+                
+                if (attachedFiles.length > 0) {
+                    console.log('Full attachment data preview:', {
+                        name: attachedFiles[0].name,
+                        type: attachedFiles[0].type,
+                        dataStart: attachedFiles[0].data.substring(0, 50) + '...'
+                    });
                 }
-                saveCurrentChat();
-            } catch (error) {
-                console.error('Error:', error);
-                updateMessage(loadingId, `❌ Error: ${error.message}`);
-            } finally {
-                userInput.disabled = false;
-                sendBtn.disabled = false;
-                userInput.focus();
-            }
-        }
 
-        async function handleImageGeneration(message, loadingId) {
-            const response = await fetch('http://192.168.50.202:8188/prompt', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    prompt: {
-                        "3": { inputs: { seed: Math.floor(Math.random() * 999999), steps: 50, cfg: 6.5, sampler_name: "dpm_2", scheduler: "karras", denoise: 1.0, model: ["4",0], positive:["6",0], negative:["7",0], latent_image:["5",0] }, class_type: "KSampler" },
-                        "4": { inputs: { ckpt_name: "dreamshaper_8.safetensors" }, class_type: "CheckpointLoaderSimple" },
-                        "5": { inputs: { width: 512, height: 512, batch_size: 1 }, class_type: "EmptyLatentImage" },
-                        "6": { inputs: { text: message, clip: ["4",1] }, class_type: "CLIPTextEncode" },
-                        "7": { inputs: { text: "blurry, low quality, distorted", clip: ["4",1] }, class_type: "CLIPTextEncode" },
-                        "8": { inputs: { samples: ["3",0], vae:["4",2] }, class_type: "VAEDecode" },
-                        "9": { inputs: { filename_prefix: "ai_generated", images:["8",0] }, class_type: "SaveImage" }
-                    },
-                    client_id: "web_interface"
-                })
-            });
-
-            const data = await response.json();
-            const promptId = data.prompt_id;
-
-            updateMessage(loadingId, `
-                <span class="mode-badge image">🎨 Generating image</span>
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-${promptId}" style="width: 0%"></div>
-                    </div>
-                    <div class="progress-text">
-                        <span id="progress-text-${promptId}">Processing...</span>
-                        <span id="progress-percent-${promptId}">0%</span>
-                    </div>
-                </div>
-            `);
-
-            await pollProgress(promptId);
-
-            const historyResponse = await fetch(`http://192.168.50.202:8188/history/${promptId}`);
-            const history = await historyResponse.json();
-
-            if (history[promptId] && history[promptId].outputs) {
-                const imageInfo = history[promptId].outputs['9'].images[0];
-                const imageUrl = `http://192.168.50.202:8188/view?filename=${imageInfo.filename}&type=output`;
-
-                updateMessage(loadingId, `
-                    <img src="${imageUrl}" class="message-image" onclick="window.open('${imageUrl}', '_blank')" />
-                `);
-            } else {
-                throw new Error('Image generation failed');
-            }
-        }
-
-        async function pollProgress(promptId) {
-            let progress = 0;
-            const maxAttempts = 100;
-            let attempts = 0;
-
-            while (progress < 100 && attempts < maxAttempts) {
-                try {
-                    const queueResponse = await fetch('http://192.168.50.202:8188/queue');
-                    const queueData = await queueResponse.json();
-
-                    const running = queueData.queue_running;
-                    if (running.length > 0 && running[0][1] === promptId) {
-                        progress = Math.min(95, attempts * 2);
-                        
-                        const progressFill = document.getElementById(`progress-${promptId}`);
-                        const progressPercent = document.getElementById(`progress-percent-${promptId}`);
-
-                        if (progressFill) {
-                            progressFill.style.width = progress + '%';
-                            progressPercent.textContent = Math.floor(progress) + '%';
-                        }
-                    }
-
-                    const historyResponse = await fetch(`http://192.168.50.202:8188/history/${promptId}`);
-                    const history = await historyResponse.json();
-
-                    if (history[promptId]) {
-                        progress = 100;
-                        const progressFill = document.getElementById(`progress-${promptId}`);
-                        const progressText = document.getElementById(`progress-text-${promptId}`);
-                        const progressPercent = document.getElementById(`progress-percent-${promptId}`);
-
-                        if (progressFill) {
-                            progressFill.style.width = '100%';
-                            progressText.textContent = 'Complete!';
-                            progressPercent.textContent = '100%';
-                        }
-                        break;
-                    }
-
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    attempts++;
-                } catch (error) {
-                    console.error('Progress error:', error);
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    attempts++;
-                }
-            }
-        }
-
-        async function handleChat(message, loadingId) {
-            try {
-                // Build conversation history from current chat (last 6 messages = 3 exchanges)
-                const messageElements = Array.from(messagesDiv.querySelectorAll('.message')).slice(-6);
-                const conversationHistory = messageElements.map(msg => {
-                    const isUser = msg.classList.contains('user');
-                    const contentDiv = msg.querySelector('.message-content');
-                    // Get text content, strip HTML tags
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = contentDiv.innerHTML;
-                    const content = tempDiv.textContent || tempDiv.innerText || '';
-                    
-                    return {
-                        role: isUser ? 'user' : 'assistant',
-                        content: content.trim().substring(0, 500) // Limit to 500 chars per message
-                    };
-                }).filter(msg => msg.content.length > 0);
-
-                // Prepare request body with conversation history
-                const requestBody = {
-                    chatInput: message
+                // IMPORTANT: Send the exact structure
+                const payload = { 
+                    chatInput: message,
+                    conversationHistory: conversationHistory,
+                    attachments: attachedFiles
                 };
+                
+                console.log('🔍 Payload structure:', {
+                    hasChatInput: !!payload.chatInput,
+                    hasHistory: !!payload.conversationHistory,
+                    hasAttachments: !!payload.attachments,
+                    attachmentCount: payload.attachments ? payload.attachments.length : 0
+                });
 
-                // Add conversation history if we have any
-                if (conversationHistory.length > 0) {
-                    requestBody.conversationHistory = conversationHistory;
-                }
-
-                console.log('Sending to n8n:', requestBody); // Debug log
-
-                const response = await fetch('http://192.168.50.202:5678/webhook/db604b2c-9149-41f1-bcc1-b1a5f38a1f3b/chat', {
+                const response = await fetch(N8N_WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestBody)
+                    body: JSON.stringify(payload)
                 });
+
+                // Clear attachments after sending
+                attachedFiles = [];
+                updateAttachmentPreview();
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -1075,46 +1263,69 @@
                     }
                 }
                 
-                // CRITICAL: Format code blocks FIRST, before any other formatting
+                // Format response
                 responseText = formatCodeBlocks(responseText);
-                
-                // Then format markdown (bold)
+                responseText = responseText.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, 
+                    '<img src="$2" alt="$1" class="message-image" onclick="window.open(\'$2\', \'_blank\')" />');
+                responseText = responseText.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '');
                 responseText = responseText.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
                 
-                // Only add <br> for line breaks OUTSIDE of code blocks
-                // Split by code blocks, process non-code parts only
-                const parts = responseText.split(/(<div class="code-block-wrapper">[\s\S]*?<\/div>)/);
-                responseText = parts.map((part, index) => {
-                    // Keep code blocks unchanged
-                    if (part.includes('code-block-wrapper')) {
+                const parts = responseText.split(/(<div class="code-block-wrapper">[\s\S]*?<\/div>|<img[^>]*>)/);
+                responseText = parts.map((part) => {
+                    if (part.includes('code-block-wrapper') || part.startsWith('<img')) {
                         return part;
                     }
-                    // Replace \n with <br> only in non-code parts
                     return part.replace(/\n/g, '<br>');
                 }).join('');
                 
+                // Show response instantly (no fake typing)
                 updateMessage(loadingId, responseText);
+
+                // Filter out fake image generation responses from conversation history
+                const cleanResponse = responseText.replace(/<[^>]*>/g, '');
+                const isFakeGeneration = cleanResponse.includes('Image Generated Successfully') && 
+                                        !cleanResponse.includes('![Generated Image]');
+                
+                // Only add to history if it's NOT a fake generation
+                if (!isFakeGeneration) {
+                    conversationHistory.push({ 
+                        role: 'assistant', 
+                        content: cleanResponse
+                    });
+                    if (conversationHistory.length > 6) {
+                        conversationHistory = conversationHistory.slice(-6);
+                    }
+                }
+                
+                saveCurrentChat();
                 
             } catch (error) {
-                console.error('Chat error:', error);
-                throw error;
+                console.error('Error:', error);
+                updateMessage(loadingId, `❌ Error: ${error.message}`);
+            } finally {
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                userInput.focus();
             }
         }
 
         function addMessage(content, type, returnId = false) {
-            const messageGroup = document.createElement('div');
-            messageGroup.className = 'message-group';
+            const wrapper = document.getElementById('messageWrapper') || messagesDiv;
             
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = type === 'user' ? 'U' : 'AI';
             
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
             contentDiv.innerHTML = content;
             
+            messageDiv.appendChild(avatar);
             messageDiv.appendChild(contentDiv);
-            messageGroup.appendChild(messageDiv);
-            messagesDiv.appendChild(messageGroup);
+            wrapper.appendChild(messageDiv);
 
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
